@@ -14,7 +14,7 @@ from rich.console import Console
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
     """Login to the website using Selenium."""
-    login_url: str = "https://app.cargamaquina.com.br/site/login?c=31.1~78%2C8%5E56%2C8"
+    login_url: str = "https://web.cargamaquina.com.br/site/login?c=31.1%7E78%2C8%5E56%2C8"
     driver = webdriver.Chrome()
     try:
         driver.get(login_url)
