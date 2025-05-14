@@ -10,6 +10,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import selenium.common.exceptions
 from rich.console import Console
+from rich.text import Text
 
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
@@ -31,14 +32,27 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
     console = Console()
     console.print("[bold green]Login realizado com sucesso![/bold green]")
     console.print("[bold blue]Iniciando criação dos pedidos de compra...[/bold blue]")
-    driver.get("https://app.cargamaquina.com.br/compra/pedidoCompra")
+    driver.get("https://web.cargamaquina.com.br/compra/pedidoCompra")
     time.sleep(10)
-    for json_file_path in json_file_paths:
+    console.print(
+        "[bold blue]Digite o número do pedido que deseja criar:[/bold blue]"
+    )
+    order_option: str = ""
+
+    while order_option != "quit":
+        for i, json_file in enumerate(json_file_paths):
+            text = Text(f"{i + 1} - {json_file}\n")
+            text.stylize("bold green")
+            console.print(text)
+
+        order_option: str = input()
+        json_file_path = json_file_paths[int(order_option) - 1]
         with open(json_file_path, "r", encoding="utf-8") as f:  # type: ignore
             data = json.load(f)
             for orders in data:
                 try:
-                    driver.find_element(By.ID, "btIncluir").click()
+                    time.sleep(5)
+                    driver.find_element(By.XPATH, "//*[@id='btIncluir']").click()
                     driver.implicitly_wait(10)
                     supplier = driver.find_element(
                         By.XPATH, "//*[@id='s2id_sel2Fornecedor']"
@@ -65,7 +79,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         time.sleep(2)
                         pygui.write("15/06/2025")
                         driver.find_element(By.ID, "adicionarItemCompraGrid").click()
-                        driver.implicitly_wait(10)
+                        driver.implicitly_wait(10)        
                 except selenium.common.exceptions.NoSuchElementException as e:
                     print(f"Error: {e}")
                 except selenium.common.exceptions.ElementNotInteractableException as e:
