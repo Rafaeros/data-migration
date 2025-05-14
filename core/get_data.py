@@ -41,11 +41,11 @@ def format_sheet_data(df: pd.DataFrame) -> list[str]:
     json_file_paths: list[str] = []
     for owner_type, group in groups:
         group = group.reset_index(drop=True)
-        order_number = ceil(len(group) / 20)
+        order_number = ceil(len(group) / 15)
         orders: list[dict] = []
 
         for i in range(order_number):
-            fat = group.iloc[i * 20 : (i + 1) * 20]
+            fat = group.iloc[i * 15 : (i + 1) * 15]
 
             orders.append(
                 {
@@ -119,5 +119,5 @@ def get_data(path: str) -> None:
 
 
 if __name__ == "__main__":
-    get_data(r"C:\Users\user\Documents\Estoque.xlsx")
+    get_data(r"C:\Users\user\Documents\Analise.xlsx")
     print("Script executed successfully")
