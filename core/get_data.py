@@ -58,15 +58,15 @@ def format_sheet_data(df: pd.DataFrame) -> list[str]:
                 }
             )
 
-        tmp_folder = pathlib.Path("./tmp")
+        tmp_folder = pathlib.Path("./tmp/json/")
         tmp_folder.mkdir(parents=True, exist_ok=True)
-
-        json_file: str = "./tmp/" + owner_type.lower().replace("/", "_") + ".json"
+        if "." in owner_type[-1]:
+            json_file: str = "./tmp/json/"+owner_type.lower().replace("/", "_")+"json"
+        else:
+            json_file: str = "./tmp/json/"+owner_type.lower().replace("/", "_")+".json"
         json_file_paths.append(json_file)
         with open(json_file, "w", encoding="utf-8") as f:
             json.dump(orders, f, indent=4, ensure_ascii=False)
-
-        df.to_excel("./tmp/Planilha_Formatada.xlsx", index=False)
 
     print(f"Total de pedidos: {len(orders)}")
     return json_file_paths

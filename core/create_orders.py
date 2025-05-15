@@ -15,7 +15,9 @@ from rich.text import Text
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
     """Login to the website using Selenium."""
-    login_url: str = "https://web.cargamaquina.com.br/site/login?c=31.1%7E78%2C8%5E56%2C8"
+    login_url: str = (
+        "https://web.cargamaquina.com.br/site/login?c=31.1%7E78%2C8%5E56%2C8"
+    )
     driver = webdriver.Chrome()
     try:
         driver.get(login_url)
@@ -34,9 +36,6 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
     console.print("[bold blue]Iniciando criação dos pedidos de compra...[/bold blue]")
     driver.get("https://web.cargamaquina.com.br/compra/pedidoCompra")
     time.sleep(10)
-    console.print(
-        "[bold blue]Digite o número do pedido que deseja criar:[/bold blue]"
-    )
     order_option: str = ""
 
     while order_option != "quit":
@@ -44,13 +43,21 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
             text = Text(f"{i + 1} - {json_file}\n")
             text.stylize("bold green")
             console.print(text)
-
+        console.print(
+            "[bold blue]Digite o número do pedido que deseja criar:[/bold blue]"
+        )
         order_option: str = input()
         json_file_path = json_file_paths[int(order_option) - 1]
         with open(json_file_path, "r", encoding="utf-8") as f:  # type: ignore
             data = json.load(f)
             for orders in data:
                 try:
+                    console.print(
+                        f"[bold blue]Criando pedido de compra:[/bold blue] {orders['pedido_numero']}"
+                    )
+                    console.print(
+                        f"[bold blue]TIPO/PROPRIETARIO[/bold blue] {orders['tipo_proprietario']}"
+                    )
                     time.sleep(5)
                     driver.find_element(By.XPATH, "//*[@id='btIncluir']").click()
                     driver.implicitly_wait(10)
@@ -61,6 +68,9 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     pygui.write("f&k group tecnologia em sistemas automotivos ltda")
                     pygui.press("enter")
                     for item in orders["itens"]:
+                        console.print(
+                            f"[bold blue]Adicionando item:[/bold blue] {item['CODÍGO']}"
+                        )
                         driver.find_element(By.ID, "adicionarItensCompra").click()
                         time.sleep(10)
                         pygui.press("tab", presses=2)
@@ -72,14 +82,23 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         time.sleep(2)
                         if item["CUSTO UNITARIO"] == 0:
                             pygui.write("1,00")
+                        elif item["CUSTO UNITARIO"] < 0:
+                            pygui.write(abs(item["CUSTO UNITARIO"]).replace(".", ","))
                         else:
                             pygui.write(str(item["CUSTO UNITARIO"]).replace(".", ","))
                         time.sleep(2)
                         pygui.press("tab", presses=3)
                         time.sleep(2)
-                        pygui.write("15/06/2025")
-                        driver.find_element(By.ID, "adicionarItemCompraGrid").click()
-                        driver.implicitly_wait(10)        
+                        pygui.write("20/06/2025")
+                        driver.find_element(
+                            By.XPATH, "//*[@id='adicionarItemCompraGrid']"
+                        ).click()
+                        driver.implicitly_wait(10)
+                    rateio = driver.find_element(By.XPATH, "//*[@id='s2id_sel2Rateio']")
+                    rateio.click()
+                    pygui.write(orders["FINALIDADE"][1:5])
+                    pygui.press("enter")
+                    driver.find_element(By.XPATH, "//*[@id='btnGravarCompra']").click()
                 except selenium.common.exceptions.NoSuchElementException as e:
                     print(f"Error: {e}")
                 except selenium.common.exceptions.ElementNotInteractableException as e:
@@ -92,8 +111,4 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
 
 
 if __name__ == "__main__":
-    create_orders(
-        "username",
-        "password",
-        ["data.json"]
-    )
+    create_orders("username", "password", ["data.json"])
