@@ -60,6 +60,10 @@ def format_sheet_data(df: pd.DataFrame) -> list[str]:
 
         tmp_folder = pathlib.Path("./tmp/json/")
         tmp_folder.mkdir(parents=True, exist_ok=True)
+        
+        order_created = pathlib.Path("./tmp/pedidos_criados/")
+        order_created.mkdir(parents=True, exist_ok=True)
+        
         if "." in owner_type[-1]:
             json_file: str = "./tmp/json/"+owner_type.lower().replace("/", "_")+"json"
         else:

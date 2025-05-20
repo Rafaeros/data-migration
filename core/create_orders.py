@@ -15,6 +15,7 @@ import selenium.common.exceptions
 from rich.console import Console
 from rich.text import Text
 
+from utils.send_email import send_order_email
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
     """Login to the website using Selenium."""
@@ -22,7 +23,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
         "https://web.cargamaquina.com.br/site/login?c=31.1%7E78%2C8%5E56%2C8"
     )
     options = Options()
-    options.add_argument("--force-device-scale-factor=0.8")  # 80% de zoom
+    options.add_argument("--force-device-scale-factor=0.75")  # 80% de zoom
     driver = webdriver.Chrome(options=options)
     driver.maximize_window()
     wait = WebDriverWait(driver, 15)
@@ -43,6 +44,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
     console.print("[bold blue]Iniciando criação dos pedidos de compra...[/bold blue]")
     time.sleep(3)
     driver.get("https://web.cargamaquina.com.br/compra/pedidoCompra")
+    pygui.shortcut("alt", "tab")
     order_option: str = ""
     rateios: list[str] = [
         "MATERIAL DE USO E CONSUMO [MAT-USO]",
@@ -101,21 +103,22 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
         console.print("[bold blue]Selecione o rateio dos pedidos:[/bold blue]")
         rateio_option: str = input()
         time.sleep(1)
-
+        pygui.shortcut("alt", "tab")
         rateio = rateios[int(rateio_option) - 1]
         json_file_path = json_file_paths[int(order_option) - 1]
         time.sleep(1)
         with open(json_file_path, "r", encoding="utf-8") as f:  # type: ignore
-            data = json.load(f)
-            pygui.shortcut("alt", "tab")
-            for orders in data:
+            orders = json.load(f)
+            for order in orders:
                 try:
                     console.print(
-                        f"[bold blue]Criando pedido de compra:[/bold blue] {orders['pedido_numero']}"
+                        f"[bold blue]Criando pedido de compra:[/bold blue] {order['pedido_numero']}"
                     )
                     console.print(
-                        f"[bold blue]TIPO/PROPRIETARIO[/bold blue] {orders['tipo_proprietario']}"
+                        f"[bold blue]TIPO/PROPRIETARIO[/bold blue] {order['tipo_proprietario']}"
                     )
+                    console.print(f"[bold blue]Rateio: [/bold blue] {rateio}")
+
                     wait.until(
                         EC.visibility_of_element_located(
                             (By.XPATH, "//*[@id='btIncluir']")
@@ -131,7 +134,8 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     pygui.write("f&k group tecnologia em sistemas automotivos ltda")
                     pygui.press("enter")
                     time.sleep(2)
-                    for item in orders["itens"]:
+                    # Adding items in order
+                    for item in order["itens"]:
                         time.sleep(2)
                         console.print(
                             f"[bold blue]Adicionando item:[/bold blue] {item['CODÍGO']}"
@@ -158,10 +162,12 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         time.sleep(2)
                         if item["CUSTO UNITARIO"] == 0:
                             pygui.write("1,00")
+                            item["CUSTO UNITARIO"] = 1
                         elif item["CUSTO UNITARIO"] < 0:
                             pygui.write(
                                 str(abs(item["CUSTO UNITARIO"])).replace(".", ",")
                             )
+                            item["CUSTO UNITARIO"] = abs(item["CUSTO UNITARIO"])
                         else:
                             pygui.write(str(item["CUSTO UNITARIO"]).replace(".", ","))
                         time.sleep(2)
@@ -173,6 +179,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                                 (By.XPATH, "//*[@id='adicionarItemCompraGrid']")
                             )
                         ).click()
+                    # Finished to add the 15 items in order, now we need to go to the invoice
                     time.sleep(2)
                     # Invoice
                     invoice = wait.until(
@@ -206,13 +213,14 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             (By.XPATH, "//*[@id='gerarParcelas']")
                         )
                     ).click()
-
+                    time.sleep(2)
+                    pygui.shortcut("ctrl", "end")
+                    # Choosing the purpose of the items in the order
                     purpose = wait.until(
                         EC.presence_of_element_located(
                             (By.XPATH, "//*[@id='s2id_sel2Rateio']")
                         )
                     )
-                    driver.execute_script("arguments[0].scrollIntoView();", purpose)
                     time.sleep(2)
                     purpose.click()
                     time.sleep(2)
@@ -226,6 +234,15 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             (By.XPATH, "//*[@id='btnGravarCompra']")
                         )
                     ).click()
+
+                    time.sleep(2)
+                    console.print(
+                        f"[bold green]Pedido de compra criado com sucesso:[/bold green] {order['pedido_numero']}"
+                    )
+
+                    send_order_email(order, rateio)
+                    pygui.shortcut("alt", "tab")
+
                 except selenium.common.exceptions.NoSuchElementException as e:
                     print(f"Error: {e}")
                 except selenium.common.exceptions.ElementNotInteractableException as e:
@@ -235,7 +252,6 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                 except Exception as e:
                     print(f"Error: {e}")
                     input("Press Enter to continue...")
-
 
 if __name__ == "__main__":
     create_orders("username", "password", ["./data.json"])

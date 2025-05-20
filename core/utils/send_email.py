@@ -103,7 +103,7 @@ def send_order_email(order_data, rateio) -> None:
     console = Console()
     try:
         mail = outlook.CreateItem(0)
-        mail.To = "email@dominio"
+        mail.To = "rafael.costa@lanxcables.com.br"
         mail.Subject = f"Pedido de Compra N° {pedido_numero} - {tipo_proprietario}"
         mail.HTMLBody = email_body
         mail.Send()
