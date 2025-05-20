@@ -24,6 +24,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
     options = Options()
     options.add_argument("--force-device-scale-factor=0.8")  # 80% de zoom
     driver = webdriver.Chrome(options=options)
+    driver.maximize_window()
     wait = WebDriverWait(driver, 15)
     try:
         driver.get(login_url)
@@ -43,6 +44,44 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
     time.sleep(3)
     driver.get("https://web.cargamaquina.com.br/compra/pedidoCompra")
     order_option: str = ""
+    rateios: list[str] = [
+        "MATERIAL DE USO E CONSUMO [MAT-USO]",
+        "CUSTOS E SERVIÇOS - IMPORTAÇÃO [CUS-IMP]",
+        "EQUIPAMENTOS PROTEÇÃO INDIVIDUAL/UNIFORME [EPI]",
+        "FEIRAS - EVENTOS [DESP-FEIR]",
+        "MANUTENÇÃO DE MAQUINAS E EQUIPAMENTOS [MAN-MAQ]",
+        "SOFTWARE E HARDWARE [MAN-SOFT]",
+        "MANUTENÇÃO DE VEICULO [MAN-VEIC]",
+        "MANUTENÇÃO PREDIAL [MAN-PRE]",
+        "MATERIAL DE ESCRITÓRIO [MAT-ESCR]",
+        "MATERIAL DE LIMPEZA [MAT-LIMP]",
+        "PROPAGANDA E PUBLICIDADE [PRO-PUB]",
+        "SERVIÇOS DE TERCEIROS PRODUÇÃO [SERV-TER]",
+        "VIAGENS / ESTADIAS / PEDÁGIOS [VIA-EST]",
+        "MATERIA-PRIMA [MAT-MP]",
+        "MATERIA PRIMA REVENDA [MP-REV]",
+        "IMOBILIZADO [IMO]",
+        "GASTOS GERAIS DE FABRICAÇÃO [KANBAN]",
+        "MATÉRIA PRIMA CABOS [MP-CAB]",
+        "NOVO PROJETO [NPROJ]",
+        "CUSTO FIXO [CFIX]",
+        "INVESTIMENTO [INVST]",
+        "ALIMENTAÇÃO/BENEFÍCIOS FUNCIONÁRIOS [ALIMBEF]",
+        "MATERIA PRIMA INDUSTRIALIZAÇÃO [MP-IND]",
+        "NOVO PROJETO - ELETRONICO [PROJ - ELE]",
+        "EMBALAGEM (MAT EMBALAGEM) [MAT EMB]",
+        "CONFRATERNIZAÇÃO [CONF MKT]",
+        "CONFRATERNIZAÇÃO [FESTA]",
+        "DECORAÇÃO [DEC MKT]",
+        "DECORAÇÃO [ENDO MKT]",
+        "BENEFÍCIOS [CEST BAS]",
+        "COPA E COZINHA [COPA]",
+        "HIGIENE E LIMPEZA [HIG LIMP]",
+        "MATERIAL DE ESCRITÓRIO [MAT ESC]",
+        "FERRAMENTAS [FERRAM-PRO]",
+        "FERRAMENTAS [FERRAM]",
+        "GASTOS GERAIS PREDIAL [GAST PRED]",
+    ]
 
     while order_option != "quit":
         for i, json_file in enumerate(json_file_paths):
@@ -53,9 +92,22 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
             "[bold blue]Digite o número do pedido que deseja criar:[/bold blue]"
         )
         order_option: str = input()
+        time.sleep(1)
+
+        for i, rateio in enumerate(rateios):
+            text = Text(f"{i + 1} - {rateio}\n")
+            text.stylize("bold green")
+            console.print(text)
+        console.print("[bold blue]Selecione o rateio dos pedidos:[/bold blue]")
+        rateio_option: str = input()
+        time.sleep(1)
+
+        rateio = rateios[int(rateio_option) - 1]
         json_file_path = json_file_paths[int(order_option) - 1]
+        time.sleep(1)
         with open(json_file_path, "r", encoding="utf-8") as f:  # type: ignore
             data = json.load(f)
+            pygui.shortcut("alt", "tab")
             for orders in data:
                 try:
                     console.print(
@@ -75,9 +127,12 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         )
                     )
                     supplier.click()
+                    time.sleep(2)
                     pygui.write("f&k group tecnologia em sistemas automotivos ltda")
                     pygui.press("enter")
+                    time.sleep(2)
                     for item in orders["itens"]:
+                        time.sleep(2)
                         console.print(
                             f"[bold blue]Adicionando item:[/bold blue] {item['CODÍGO']}"
                         )
@@ -161,7 +216,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     time.sleep(2)
                     purpose.click()
                     time.sleep(2)
-                    pygui.write(orders["tipo_proprietario"][0:6])
+                    pygui.write(rateio)
                     time.sleep(2)
                     pygui.press("enter")
                     time.sleep(2)
@@ -183,8 +238,4 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
 
 
 if __name__ == "__main__":
-    create_orders(
-        "username",
-        "password",
-        ["./data.json"]
-    )
+    create_orders("username", "password", ["./data.json"])
