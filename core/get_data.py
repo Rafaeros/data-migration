@@ -2,6 +2,7 @@
 This script is used to read an Excel file and print the names of the sheets in it.
 """
 
+import os
 import json
 from getpass import getpass
 import pathlib
@@ -60,19 +61,35 @@ def format_sheet_data(df: pd.DataFrame) -> list[str]:
 
         tmp_folder = pathlib.Path("./tmp/json/")
         tmp_folder.mkdir(parents=True, exist_ok=True)
-        
-        order_created = pathlib.Path("./tmp/pedidos_criados/")
-        order_created.mkdir(parents=True, exist_ok=True)
-        
+
         if "." in owner_type[-1]:
-            json_file: str = "./tmp/json/"+owner_type.lower().replace("/", "_")+"json"
+            json_file: str = (
+                "./tmp/json/" + owner_type.lower().replace("/", "_") + "json"
+            )
         else:
-            json_file: str = "./tmp/json/"+owner_type.lower().replace("/", "_")+".json"
+            json_file: str = (
+                "./tmp/json/" + owner_type.lower().replace("/", "_") + ".json"
+            )
         json_file_paths.append(json_file)
         with open(json_file, "w", encoding="utf-8") as f:
             json.dump(orders, f, indent=4, ensure_ascii=False)
 
     print(f"Total de pedidos: {len(orders)}")
+    if os.path.exists("./tmp/pedidos_enviados.txt"):
+        with open("./tmp/pedidos_enviados.txt", "r", encoding="utf-8") as f:
+            orders_sent = f.read().splitlines()
+            sent_orders: list[str] = []
+            for order in orders_sent:
+                if order in json_file_paths:
+                    sent_orders.append(order)
+                    json_file_paths.remove(order)
+
+            print("Pedidos já Criados:")
+            for i, order in enumerate(sent_orders):
+                print(f"{i + 1} - {order}")
+
+            return json_file_paths
+
     return json_file_paths
 
 

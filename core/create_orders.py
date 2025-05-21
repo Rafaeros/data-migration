@@ -3,6 +3,7 @@ This module is responsible for creating orders on the website.
 It uses Selenium to automate the login process and navigate through the website.
 """
 
+import os
 import json
 import time
 import pyautogui as pygui
@@ -15,7 +16,8 @@ import selenium.common.exceptions
 from rich.console import Console
 from rich.text import Text
 
-from utils.send_email import send_order_email
+from core.utils.send_email import send_order_email
+
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
     """Login to the website using Selenium."""
@@ -103,10 +105,10 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
         console.print("[bold blue]Selecione o rateio dos pedidos:[/bold blue]")
         rateio_option: str = input()
         time.sleep(1)
-        pygui.shortcut("alt", "tab")
         rateio = rateios[int(rateio_option) - 1]
         json_file_path = json_file_paths[int(order_option) - 1]
         time.sleep(1)
+        pygui.shortcut("alt", "tab")
         with open(json_file_path, "r", encoding="utf-8") as f:  # type: ignore
             orders = json.load(f)
             for order in orders:
@@ -118,7 +120,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         f"[bold blue]TIPO/PROPRIETARIO[/bold blue] {order['tipo_proprietario']}"
                     )
                     console.print(f"[bold blue]Rateio: [/bold blue] {rateio}")
-
+                    time.sleep(2)
                     wait.until(
                         EC.visibility_of_element_located(
                             (By.XPATH, "//*[@id='btIncluir']")
@@ -200,6 +202,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     driver.execute_script(
                         "arguments[0].scrollIntoView();", invoice_time
                     )
+                    pygui.shortcut("ctrl", "end")
                     time.sleep(2)
                     invoice_time.click()
                     time.sleep(2)
@@ -239,19 +242,37 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     console.print(
                         f"[bold green]Pedido de compra criado com sucesso:[/bold green] {order['pedido_numero']}"
                     )
-
                     send_order_email(order, rateio)
-                    pygui.shortcut("alt", "tab")
-
                 except selenium.common.exceptions.NoSuchElementException as e:
                     print(f"Error: {e}")
+                    return
                 except selenium.common.exceptions.ElementNotInteractableException as e:
                     print(f"Error: {e}")
+                    return
                 except selenium.common.exceptions.StaleElementReferenceException as e:
                     print(f"Error: {e}")
+                    return
                 except Exception as e:
                     print(f"Error: {e}")
                     input("Press Enter to continue...")
+                    return
+
+        sended_orders_path: str = "./tmp/pedidos_enviados.txt"
+        if not os.path.exists(sended_orders_path):
+            with open(sended_orders_path, "w", encoding="utf-8") as f:
+                f.write("pedidos_enviados\n")
+                f.write(f"{json_file_path}\n")
+                json_file_paths.remove(json_file_path)
+        else:
+            print("O arquivo de pedidos enviados já existe!")
+            with open(sended_orders_path, "a", encoding="utf-8") as f:
+                f.write(f"{json_file_path}\n")
+                json_file_paths.remove(json_file_path)
+
+        pygui.shortcut("alt", "tab")
+
+    driver.quit()
+
 
 if __name__ == "__main__":
     create_orders("username", "password", ["./data.json"])
