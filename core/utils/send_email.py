@@ -16,6 +16,7 @@ def send_order_email(order_data, rateio) -> None:
     quantidade_itens: int = order_data["quantidade_itens"]
     itens = pd.DataFrame(order_data["itens"]).reset_index(drop=True)
     itens.index += 1
+    itens["CUSTO UNITARIO"] = itens["CUSTO UNITARIO"].apply(lambda x: str(x).replace(".", ","))
     itens_html = itens.to_html(col_space=50, justify="center")
 
     style: str = """
@@ -108,7 +109,7 @@ def send_order_email(order_data, rateio) -> None:
         mail.Subject = f"Pedido de Compra N° {pedido_numero} - {tipo_proprietario}"
         mail.HTMLBody = email_body
         mail.Send()
-    except Exception as e:
+    except Exception as e:  
         print(f"Error: {e}")
     finally:
         outlook.Quit()
