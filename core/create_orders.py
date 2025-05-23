@@ -159,17 +159,22 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         time.sleep(2)
                         pygui.press("enter")
                         time.sleep(2)
-                        pygui.write(str(item["SALDO TOTAL"]).replace(".", ","))
+                        qty = str(item["SALDO TOTAL"])
+                        if qty.endswith(".0"):
+                            qty = str(int(float(qty)))
+                            pygui.write(qty)
+                            item["SALDO TOTAL"] = qty
+                        else:
+                            pygui.write(str(qty).replace(".", ","))
+                            item["SALDO TOTAL"] = qty
                         pygui.press("tab")
                         time.sleep(2)
                         if item["CUSTO UNITARIO"] == 0:
                             pygui.write("1,00")
-                            item["CUSTO UNITARIO"] = 1
                         elif item["CUSTO UNITARIO"] < 0:
                             pygui.write(
                                 str(abs(item["CUSTO UNITARIO"])).replace(".", ",")
                             )
-                            item["CUSTO UNITARIO"] = abs(item["CUSTO UNITARIO"])
                         else:
                             pygui.write(str(item["CUSTO UNITARIO"]).replace(".", ","))
                         time.sleep(2)
