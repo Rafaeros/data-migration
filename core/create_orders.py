@@ -21,9 +21,7 @@ from core.utils.send_email import send_order_email
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
     """Login to the website using Selenium."""
-    login_url: str = (
-        "https://web.cargamaquina.com.br/site/login?c=31.1%7E78%2C8%5E56%2C8"
-    )
+    login_url: str = "https://v2.cargamaquina.com.br/site/login/c/3.1~13,3%5e17,7"
     options = Options()
     options.add_argument("--force-device-scale-factor=0.75")  # 80% de zoom
     driver = webdriver.Chrome(options=options)
@@ -45,7 +43,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
     console.print("[bold green]Login realizado com sucesso![/bold green]")
     console.print("[bold blue]Iniciando criação dos pedidos de compra...[/bold blue]")
     time.sleep(3)
-    driver.get("https://web.cargamaquina.com.br/compra/pedidoCompra")
+    driver.get("https://v2.cargamaquina.com.br/compra/pedidoCompra")
     pygui.shortcut("alt", "tab")
     order_option: str = ""
     rateios: list[str] = [
