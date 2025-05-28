@@ -16,7 +16,7 @@ import selenium.common.exceptions
 from rich.console import Console
 from rich.text import Text
 
-from create_invoice import create_invoice
+from core.create_invoice import create_invoice
 
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:

@@ -23,7 +23,7 @@ def create_invoice(
     # Login
     login_url: str = "https://app.cargamaquina.com.br/site/login?c=31.1~78%2C8%5E56%2C8"
     options = Options()
-    options.add_argument("--force-device-scale-factor=0.70")
+    options.add_argument("--force-device-scale-factor=0.50")
     d = webdriver.Chrome(options=options)
     d.maximize_window()
     wait = WebDriverWait(d, 15)
@@ -42,8 +42,10 @@ def create_invoice(
         print(f"Error: {e}")
 
     # Create
+    time.sleep(5)
     try:
         d.get("https://app.cargamaquina.com.br/fiscal/nfe/saida")
+        time.sleep(5)
         for order in orders:
             time.sleep(2)
             wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Incluir"))).click()
@@ -88,6 +90,7 @@ def create_invoice(
             time.sleep(2)
 
             for item in order["itens"]:
+                time.sleep(2)
                 console.print(
                     "[bold blue]Abrindo Formulário para Adicionar Itens na NF[/bold blue]"
                 )
@@ -191,7 +194,9 @@ def create_invoice(
                 )
                 add_item.click()
                 console.print("[bold green]ICMS Incluido com Sucesso[/bold green]")
+                time.sleep(2)
 
+            time.sleep(2)
             pygui.shortcut("ctrl", "end")
 
             wait.until(
@@ -199,6 +204,7 @@ def create_invoice(
                     (By.XPATH, "//*[@id='s2id_sel2PrazoPR']")
                 )
             ).click()
+
             time.sleep(1)
             pygui.write("30 dias")
             time.sleep(1)
