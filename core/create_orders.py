@@ -16,7 +16,7 @@ import selenium.common.exceptions
 from rich.console import Console
 from rich.text import Text
 
-from core.utils.send_email import send_order_email
+from create_invoice import create_invoice
 
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
@@ -235,17 +235,31 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     pygui.press("enter")
                     time.sleep(2)
 
+                    console.print("[bold blue]Gravando pedido de compra[/bold blue]")
                     wait.until(
                         EC.element_to_be_clickable(
                             (By.XPATH, "//*[@id='btnGravarCompra']")
                         )
                     ).click()
 
+                    console.print(
+                        "[bold blue]Pegando valor do pedido de compra[/bold blue]"
+                    )
+                    order_number = wait.until(
+                        EC.presence_of_element_located(
+                            (
+                                By.XPATH,
+                                "//*[@id='ordem-compra-grid']/table/tbody/tr[1]/td[3]",
+                            )
+                        )
+                    ).text
+                    time.sleep(2)
+                    order["pedido_numero"] = order_number
+
                     time.sleep(2)
                     console.print(
                         f"[bold green]Pedido de compra criado com sucesso:[/bold green] {order['pedido_numero']}"
                     )
-                    send_order_email(order, rateio)
                 except selenium.common.exceptions.NoSuchElementException as e:
                     print(f"Error: {e}")
                     return
@@ -259,6 +273,10 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     print(f"Error: {e}")
                     input("Press Enter to continue...")
                     return
+            driver.quit()
+            time.sleep(5)
+            console.print("[bold blue]Iniciando criação das notas fiscais[/bold blue]")
+            create_invoice(username, password, orders, rateio)
 
         sended_orders_path: str = "./tmp/pedidos_enviados.txt"
         if not os.path.exists(sended_orders_path):
@@ -274,8 +292,10 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
 
         pygui.shortcut("alt", "tab")
 
-    driver.quit()
-
 
 if __name__ == "__main__":
-    create_orders("username", "password", ["./data.json"])
+    create_orders(
+        "username",
+        "password",
+        ["./data.json"],
+    )
