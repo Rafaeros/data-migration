@@ -16,7 +16,9 @@ def send_order_email(order_data, rateio) -> None:
     quantidade_itens: int = order_data["quantidade_itens"]
     itens = pd.DataFrame(order_data["itens"]).reset_index(drop=True)
     itens.index += 1
-    itens["CUSTO UNITARIO"] = itens["CUSTO UNITARIO"].apply(lambda x: str(x).replace(".", ","))
+    itens["CUSTO UNITARIO"] = itens["CUSTO UNITARIO"].apply(
+        lambda x: str(x).replace(".", ",")
+    )
     itens_html = itens.to_html(col_space=50, justify="center")
 
     style: str = """
@@ -83,6 +85,8 @@ def send_order_email(order_data, rateio) -> None:
                 {style}
             </head>
             <body>
+                <h1>Equipe Financeira, Nota Fiscal Armazenada com as informações abaixo:</h1>
+                
                 <h2>Pedido de Compra - N°{pedido_numero} Criado</h2>
                 <h3>Tipo de Proprietário: {tipo_proprietario}</h3>
                 <h3>Quantidade de Itens no Pedido: {quantidade_itens}, Rateio: {rateio}</h3>
@@ -90,7 +94,6 @@ def send_order_email(order_data, rateio) -> None:
                 {itens_html}
                 </br>
                 
-                <p>Prezados(as) do Financeiro</p>
                 <p>Por favor, verifiquem os dados e procedam com a emissão da NF no sistema.</p>
                 
                 <p>Caso haja alguma divergência ou necessidade de ajustes, entrem em contato comigo para corrigir.</p>
@@ -106,10 +109,12 @@ def send_order_email(order_data, rateio) -> None:
         mail = outlook.CreateItem(0)
         mail.To = "email@domain"
         mail.CC = "email@domain"
-        mail.Subject = f"Pedido de Compra N° {pedido_numero} - {tipo_proprietario}"
+        mail.Subject = (
+            f"NF Armazenada - Pedido de Compra N° {pedido_numero} - {tipo_proprietario}"
+        )
         mail.HTMLBody = email_body
         mail.Send()
-    except Exception as e:  
+    except Exception as e:
         print(f"Error: {e}")
     finally:
         outlook.Quit()
