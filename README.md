@@ -1,7 +1,8 @@
+<hr>
+
 # 📦 Projeto de Automação de Pedidos de Compra e Nota Fiscal
 Este repositório contém o código-fonte para um projeto de automação de pedidos de compra, focado na migração e análise de dados de estoque. Utilizando bibliotecas como pandas, openpyxl e selenium, o projeto automatiza a extração de dados de planilhas Excel e a criação de pedidos de compra em sistemas web.
 
-<hr>
 
 ## 📋 Pré-requisitos
 Antes de executar o projeto, verifique se os seguintes softwares estão instalados no seu sistema:
@@ -22,8 +23,6 @@ Se estiver utilizando PowerShell no Windows, altere a política de execução de
 ```powershell
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
-
-<hr>
 
 ## 📁 Estrutura do Projeto
 ```pgsql
@@ -51,8 +50,6 @@ main.py: Arquivo principal para execução do projeto.
 - **pyproject.toml**: Arquivo de configuração das dependências do projeto.
 - **uv.lock: Arquivo** de bloqueio contendo as versões exatas das dependências.
 - **.python-version**: Especifica a versão do Python utilizada no projeto.
-
-<hr>
 
 ## 🚀 Como Executar
 
@@ -91,8 +88,6 @@ Execute o script principal:
 python main.py
 ```
 
-<hr>
-
 ## 🛠️ Dependências Principais
 - **pandas**: Manipulação e análise de dados.
 - **openpyxl**: Manipulação de planilhas Excel.
@@ -100,14 +95,15 @@ python main.py
 - **pywin32**: Interação com o Outlook para envio de e-mails.
 - **rich**: Biblioteca de formatação de texto para terminal.
 
-<hr>
 
 ## 📊 Análise de Dados
+
 O notebook data_analysis.ipynb fornece uma análise exploratória dos dados extraídos, permitindo insights sobre o estoque e os pedidos de compra.
 
-<hr>
 
 ## 📄 Licença
-Este projeto está licenciado sob a MIT License.
+
+Este projeto está licenciado sob a [MIT License](LICENSE).  
+Você pode utilizá-lo, modificá-lo e distribuí-lo conforme os termos dessa licença.
 
 <hr>
