@@ -7,7 +7,7 @@ import pandas as pd
 from rich.console import Console
 
 
-def send_order_email(order_data, rateio) -> None:
+def send_order_email(order_data: dict, rateio: str, email_to: str) -> None:
     """Send email to finance department"""
     outlook = win32.Dispatch("Outlook.Application")
 
@@ -105,10 +105,19 @@ def send_order_email(order_data, rateio) -> None:
         </html>
     """
     console = Console()
+    cc_emails: list[str] = [
+        "rafael.costa@lanxcables.com.br",
+        "luciana.santos@lanxcables.com.br",
+        "paulo.matos@lanxcables.com.br",
+        "glaucio.costa@lanxcables.com.br",
+        "denise.teixeira@lanxcables.com.br",
+        "guilherme.silva@lanxcables.com.br",
+    ]
+    outlook_cc: str = "; ".join(cc_emails)
     try:
         mail = outlook.CreateItem(0)
-        mail.To = "email@domain"
-        mail.CC = "email@domain"
+        mail.To = f"{email_to}"
+        mail.CC = f"{outlook_cc}"
         mail.Subject = (
             f"NF Armazenada - Pedido de Compra N° {pedido_numero} - {tipo_proprietario}"
         )
@@ -152,4 +161,5 @@ if __name__ == "__main__":
             ],
         },
         "EMBALAGEM",
+        "email@domain",
     )

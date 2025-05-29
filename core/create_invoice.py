@@ -41,12 +41,19 @@ def create_invoice(
     except selenium.common.exceptions.ElementNotInteractableException as e:
         print(f"Error: {e}")
 
+    # Emails
+    emails: list[str] = [
+        "vera.cristina@lanxcables.com.br",
+        "adriana.damas@lanxcables.com.br",
+        "lucineide@lanxcables.com.br",
+    ]
+
     # Create
     time.sleep(6)
     try:
         d.get("https://app.cargamaquina.com.br/fiscal/nfe/saida")
         time.sleep(6)
-        for order in orders:
+        for i, order in enumerate(orders):
             time.sleep(3)
             wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Incluir"))).click()
             time.sleep(3)
@@ -246,7 +253,8 @@ def create_invoice(
             ).click()
 
             console.print("[bold green]Nota Fiscal criada com sucesso![/bold green]")
-            send_order_email(order, rateio)
+            current_email = emails[i % len(emails)]
+            send_order_email(order, rateio, current_email)
 
     except selenium.common.exceptions.NoSuchElementException as e:
         print(f"Error: {e}")
@@ -317,11 +325,7 @@ if __name__ == "__main__":
                     "NCM": 238,
                 },
             ],
-        }
+        },
     ]
 
-    create_invoice(
-        "username",
-        "password",
-        orders_data,
-        "EMBALAGEM")
+    create_invoice("username", "password", orders_data, "EMBALAGEM")
