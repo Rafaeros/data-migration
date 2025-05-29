@@ -279,6 +279,7 @@ def create_invoice(
                 f"arguments[0].setAttribute('style', '{btn_style}');",
                 generate_invoice_btn,
             )
+            time.sleep(2)
             generate_invoice_btn.click()
             console.print("[bold green]Nota Fiscal criada com sucesso![/bold green]")
             current_email = emails[i % len(emails)]
