@@ -235,34 +235,65 @@ def create_invoice(
             console.print(
                 "[bold green]Condição de Pagamento incluida com sucesso[/bold green]"
             )
-
+            time.sleep(3)
             order_info = f"Pedido de Compra: {order['pedido_numero']}"
             wait.until(
                 EC.visibility_of_element_located(
                     (By.XPATH, "//*[@id='infoAdicionais']")
                 )
             ).send_keys(order_info)
+            time.sleep(3)
+            pygui.shortcut("ctrl", "end")
+            time.sleep(2)
 
+            # Style Grid and Button
+            generate_invoice_grid = wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//*[@id='mainGridControl']/div/div[1]/div")
+                )
+            )
+            d.execute_script(
+                "arguments[0].style.padding = '50px';", generate_invoice_grid
+            )
+            time.sleep(3)
+            btn_style = (
+                "height: 80px;"
+                "text-align: center;"
+                "display: flex;"
+                "justify-content: center;"
+                "align-items: center;"
+                "gap: 2px;"
+            )
+            time.sleep(3)
             wait.until(
                 EC.element_to_be_clickable((By.XPATH, "//*[@id='btnGerarMais']"))
             ).click()
+            pygui.shortcut("ctrl", "end")
             time.sleep(3)
-
-            wait.until(
-                EC.element_to_be_clickable((By.XPATH, "//*[@id='divBtnGerar']/ul/li/a"))
-            ).click()
-
+            generate_invoice_btn = wait.until(
+                EC.visibility_of_element_located(
+                    (By.XPATH, "//*[@id='divBtnGerar']/ul/li/a")
+                )
+            )
+            d.execute_script(
+                f"arguments[0].setAttribute('style', '{btn_style}');",
+                generate_invoice_btn,
+            )
+            generate_invoice_btn.click()
             console.print("[bold green]Nota Fiscal criada com sucesso![/bold green]")
             current_email = emails[i % len(emails)]
             send_order_email(order, rateio, current_email)
-
+            time.sleep(2)
     except selenium.common.exceptions.NoSuchElementException as e:
         print(f"Error: {e}")
     except selenium.common.exceptions.ElementNotInteractableException as e:
         print(f"Error: {e}")
+    except selenium.common.exceptions.StaleElementReferenceException as e:
+        print(f"Error: {e}")
     except selenium.common.exceptions.TimeoutException as e:
         print(f"Error: {e}")
-        input("Press Enter to continue...")
+    except selenium.common.exceptions.InvalidSessionIdException as e:
+        print(f"Error: {e}")
     except Exception as e:
         print(f"Error: {e}")
         input("Press Enter to continue...")
@@ -293,39 +324,12 @@ if __name__ == "__main__":
                     "PROPRIETARIO": "Estoque",
                     "SALDO TOTAL": 100,
                     "UNIDADE": "un",
-                    "CUSTO UNITARIO": 0.5038,
-                    "DECLARA": "DECLARA",
-                    "NCM": 3652,
-                },
-            ],
-        },
-        {
-            "tipo_proprietario": "Embalagem / Estoque",
-            "pedido_numero": 2,
-            "quantidade_itens": 2,
-            "itens": [
-                {
-                    "CODÍGO": "CXPP01P",
-                    "FINALIDADE": "Embalagens",
-                    "PROPRIETARIO": "Estoque",
-                    "SALDO TOTAL": 165,
-                    "UNIDADE": "un",
                     "CUSTO UNITARIO": 0.80625,
                     "DECLARA": "DECLARA",
-                    "NCM": 253,
-                },
-                {
-                    "CODÍGO": "CXPP01M",
-                    "FINALIDADE": "Embalagens",
-                    "PROPRIETARIO": "Estoque",
-                    "SALDO TOTAL": 100,
-                    "UNIDADE": "un",
-                    "CUSTO UNITARIO": 0.5038,
-                    "DECLARA": "DECLARA",
-                    "NCM": 238,
+                    "NCM": 363,
                 },
             ],
-        },
+        }
     ]
 
     create_invoice("username", "password", orders_data, "EMBALAGEM")
