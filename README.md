@@ -1,39 +1,113 @@
-# Projeto de Automação de Pedidos de Compra
+# 📦 Projeto de Automação de Pedidos de Compra e Nota Fiscal
+Este repositório contém o código-fonte para um projeto de automação de pedidos de compra, focado na migração e análise de dados de estoque. Utilizando bibliotecas como pandas, openpyxl e selenium, o projeto automatiza a extração de dados de planilhas Excel e a criação de pedidos de compra em sistemas web.
 
-Este repositório contém o código-fonte para o projeto de migração de dados, que tem como objetivo processar e analisar dados de estoque. O projeto utiliza diversas bibliotecas Python, como `pandas` e `openpyxl`, para manipulação e tratamento dos dados.
+<hr>
 
-## Estrutura do Projeto
+## 📋 Pré-requisitos
+Antes de executar o projeto, verifique se os seguintes softwares estão instalados no seu sistema:
 
-- **main.py**: Arquivo principal para execução do projeto.
-- **core/get_data.py**: Script responsável por obter dados de uma planilha Excel.
-- **core/create_orders.py**: Script responsável por criar pedidos de compra utilizando Selenium.
-- **data_analysis.ipynb**: Notebook Jupyter utilizado para análise dos dados extraídos.
-- **uv.lock**: Arquivo de bloqueio contendo as dependências do projeto.
+* Git
+* Python 3.10+
+* Outlook
+* uv (gerenciador de dependências)
 
-## Como Executar
+Para instalar o uv, utilize:
 
-1. Certifique-se de ter o Python 3.10 instalado.
-2. Instale as dependências necessárias utilizando:
+```bash
+pip install uv
+```
 
-   ```bash
-   pip install -r pyproject.toml
-   ```
+Se estiver utilizando PowerShell no Windows, altere a política de execução de scripts para permitir scripts locais:
 
-3. Execute o script principal:
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
-   ```bash
-   python main.py
-   ```
+<hr>
 
-## Dependências
+## 📁 Estrutura do Projeto
+```pgsql
+data-migration/
+├── main.py
+├── core/
+│   ├── utils/
+│   |   └── send_email.py
+│   ├── get_data.py
+|   |── create_invoice.py
+│   └── create_orders.py
+├── data_analysis.ipynb
+├── pyproject.toml
+├── uv.lock
+├── .python-version
+└── .gitignore
+main.py: Arquivo principal para execução do projeto.
+```
 
-As principais bibliotecas utilizadas no projeto são:
+- **core/get_data.py**: Responsável por obter dados de uma planilha Excel.
+- **core/create_orders.py**: Cria pedidos de compra utilizando Selenium.
+- **core/create_invoice.py**: Cria notas fiscais utilizando Selenium.
+- **core/utils/send_email.py**: Envia e-mails utilizando a biblioteca PyWin32.
+- **data_analysis.ipynb**: Notebook Jupyter para análise dos dados extraídos.
+- **pyproject.toml**: Arquivo de configuração das dependências do projeto.
+- **uv.lock: Arquivo** de bloqueio contendo as versões exatas das dependências.
+- **.python-version**: Especifica a versão do Python utilizada no projeto.
 
-- `pandas`
-- `openpyxl`
-- `selenium`
-- `rich`
+<hr>
 
-## Licença
+## 🚀 Como Executar
 
-Este projeto está licenciado sob a MIT License - veja o arquivo LICENSE para mais detalhes.
+Clone o repositório:
+
+```bash
+git clone https://github.com/Rafaeros/data-migration.git
+cd data-migration
+```
+
+Crie e ative o ambiente virtual:
+
+No Windows:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+No Unix/MacOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Instale as dependências com uv:
+
+```bash
+uv pip install -r pyproject.toml
+```
+
+Execute o script principal:
+
+```bash
+python main.py
+```
+
+<hr>
+
+## 🛠️ Dependências Principais
+- **pandas**: Manipulação e análise de dados.
+- **openpyxl**: Manipulação de planilhas Excel.
+- **selenium**: Automação de navegadores web.
+- **pywin32**: Interação com o Outlook para envio de e-mails.
+- **rich**: Biblioteca de formatação de texto para terminal.
+
+<hr>
+
+## 📊 Análise de Dados
+O notebook data_analysis.ipynb fornece uma análise exploratória dos dados extraídos, permitindo insights sobre o estoque e os pedidos de compra.
+
+<hr>
+
+## 📄 Licença
+Este projeto está licenciado sob a MIT License.
+
+<hr>
