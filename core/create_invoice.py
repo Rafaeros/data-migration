@@ -42,14 +42,14 @@ def create_invoice(
         print(f"Error: {e}")
 
     # Create
-    time.sleep(5)
+    time.sleep(6)
     try:
         d.get("https://app.cargamaquina.com.br/fiscal/nfe/saida")
-        time.sleep(5)
+        time.sleep(6)
         for order in orders:
-            time.sleep(2)
+            time.sleep(3)
             wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Incluir"))).click()
-            time.sleep(2)
+            time.sleep(3)
             wait.until(
                 EC.visibility_of_element_located(
                     (By.XPATH, "//*[@id='s2id_sel2Natureza']")
@@ -62,7 +62,7 @@ def create_invoice(
                 )
             ).send_keys("5.102")
             pygui.press("enter")
-            time.sleep(1)
+            time.sleep(2)
             console.print(
                 "[bold green]Natureza da Operação incluido com Sucesso[/bold green]"
             )
@@ -78,7 +78,7 @@ def create_invoice(
                 )
             ).send_keys("60.347.923/0001-46")
             pygui.press("enter")
-            time.sleep(1)
+            time.sleep(2)
             console.print("[bold green]Destinatário incluido com Sucesso[/bold green]")
 
             comp = wait.until(
@@ -87,10 +87,10 @@ def create_invoice(
                 )
             )
             d.execute_script("arguments[0].scrollIntoView();", comp)
-            time.sleep(2)
+            time.sleep(3)
 
             for item in order["itens"]:
-                time.sleep(2)
+                time.sleep(3)
                 console.print(
                     "[bold blue]Abrindo Formulário para Adicionar Itens na NF[/bold blue]"
                 )
@@ -114,7 +114,7 @@ def create_invoice(
                 time.sleep(3)
                 pygui.press("tab", presses=2, interval=0.2)
                 pygui.write(item["CODÍGO"])
-                time.sleep(1)
+                time.sleep(2)
                 pygui.press("enter")
                 time.sleep(3)
 
@@ -126,7 +126,7 @@ def create_invoice(
                         )
                     )
                 ).click()
-                time.sleep(2)
+                time.sleep(3)
                 console.print(
                     f"[bold green]Item: {item['CODÍGO']} incluido com Sucesso[/bold green]"
                 )
@@ -154,7 +154,7 @@ def create_invoice(
                     "[bold green]Quantidade e Custo UN incluido com Sucesso[/bold green]"
                 )
 
-                time.sleep(2)
+                time.sleep(3)
                 wait.until(
                     EC.element_to_be_clickable(
                         (
@@ -163,7 +163,7 @@ def create_invoice(
                         )
                     )
                 ).click()
-                time.sleep(2)
+                time.sleep(3)
                 wait.until(
                     EC.element_to_be_clickable(
                         (By.XPATH, "//*[@id='accordionTributosICMS']")
@@ -172,9 +172,9 @@ def create_invoice(
 
                 pygui.press("tab", presses=2, interval=0.2)
                 pygui.write("0 - Nacional")
-                time.sleep(2)
+                time.sleep(3)
                 pygui.press("enter")
-                time.sleep(2)
+                time.sleep(3)
 
                 icms_input = wait.until(
                     EC.visibility_of_element_located(
@@ -185,18 +185,18 @@ def create_invoice(
                 if icms_value is not None:
                     icms_value = icms_value.replace(".", ",")
                     icms_input.clear()
-                    time.sleep(1)
+                    time.sleep(2)
                     icms_input.send_keys(icms_value)
-                    time.sleep(1)
+                    time.sleep(2)
 
                 add_item = wait.until(
                     EC.element_to_be_clickable((By.XPATH, "//*[@id='btnGravarItem']"))
                 )
                 add_item.click()
                 console.print("[bold green]ICMS Incluido com Sucesso[/bold green]")
-                time.sleep(2)
+                time.sleep(3)
 
-            time.sleep(2)
+            time.sleep(3)
             pygui.shortcut("ctrl", "end")
 
             wait.until(
@@ -205,22 +205,22 @@ def create_invoice(
                 )
             ).click()
 
-            time.sleep(1)
+            time.sleep(2)
             pygui.write("30 dias")
-            time.sleep(1)
+            time.sleep(2)
             pygui.press("enter")
 
-            time.sleep(2)
+            time.sleep(3)
 
             select_element = wait.until(
                 EC.visibility_of_element_located((By.XPATH, "//*[@id='formaPag']"))
             )
             select_element.click()
-            time.sleep(2)
+            time.sleep(3)
             pygui.write("Bolet")
-            time.sleep(2)
+            time.sleep(3)
             pygui.press("enter")
-            time.sleep(1)
+            time.sleep(2)
 
             wait.until(
                 EC.visibility_of_element_located((By.XPATH, "//*[@id='gerarParcelas']"))
@@ -239,7 +239,7 @@ def create_invoice(
             wait.until(
                 EC.element_to_be_clickable((By.XPATH, "//*[@id='btnGerarMais']"))
             ).click()
-            time.sleep(2)
+            time.sleep(3)
 
             wait.until(
                 EC.element_to_be_clickable((By.XPATH, "//*[@id='divBtnGerar']/ul/li/a"))

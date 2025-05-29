@@ -94,7 +94,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
             "[bold blue]Digite o número do pedido que deseja criar:[/bold blue]"
         )
         order_option: str = input()
-        time.sleep(1)
+        time.sleep(2)
 
         for i, rateio in enumerate(rateios):
             text = Text(f"{i + 1} - {rateio}\n")
@@ -102,10 +102,10 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
             console.print(text)
         console.print("[bold blue]Selecione o rateio dos pedidos:[/bold blue]")
         rateio_option: str = input()
-        time.sleep(1)
+        time.sleep(2)
         rateio = rateios[int(rateio_option) - 1]
         json_file_path = json_file_paths[int(order_option) - 1]
-        time.sleep(1)
+        time.sleep(2)
         pygui.shortcut("alt", "tab")
         with open(json_file_path, "r", encoding="utf-8") as f:  # type: ignore
             orders = json.load(f)
@@ -118,7 +118,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         f"[bold blue]TIPO/PROPRIETARIO[/bold blue] {order['tipo_proprietario']}"
                     )
                     console.print(f"[bold blue]Rateio: [/bold blue] {rateio}")
-                    time.sleep(2)
+                    time.sleep(3)
                     wait.until(
                         EC.visibility_of_element_located(
                             (By.XPATH, "//*[@id='btIncluir']")
@@ -130,13 +130,13 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         )
                     )
                     supplier.click()
-                    time.sleep(2)
+                    time.sleep(3)
                     pygui.write("f&k group tecnologia em sistemas automotivos ltda")
                     pygui.press("enter")
-                    time.sleep(2)
+                    time.sleep(3)
                     # Adding items in order
                     for item in order["itens"]:
-                        time.sleep(2)
+                        time.sleep(3)
                         console.print(
                             f"[bold blue]Adicionando item:[/bold blue] {item['CODÍGO']}"
                         )
@@ -150,13 +150,13 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                                 (By.XPATH, "//*[@id='modal-item-compra-form']/div")
                             )
                         )
-                        time.sleep(2)
+                        time.sleep(3)
                         pygui.press("tab", presses=2)
-                        time.sleep(2)
+                        time.sleep(3)
                         pygui.write(item["CODÍGO"])
-                        time.sleep(2)
+                        time.sleep(3)
                         pygui.press("enter")
-                        time.sleep(2)
+                        time.sleep(3)
                         qty = str(item["SALDO TOTAL"])
                         if qty.endswith(".0"):
                             qty = str(int(float(qty)))
@@ -166,7 +166,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             pygui.write(str(qty).replace(".", ","))
                             item["SALDO TOTAL"] = qty
                         pygui.press("tab")
-                        time.sleep(2)
+                        time.sleep(3)
                         if item["CUSTO UNITARIO"] == 0:
                             pygui.write("1,00")
                         elif item["CUSTO UNITARIO"] < 0:
@@ -175,9 +175,9 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             )
                         else:
                             pygui.write(str(item["CUSTO UNITARIO"]).replace(".", ","))
-                        time.sleep(2)
+                        time.sleep(3)
                         pygui.press("tab", presses=3)
-                        time.sleep(2)
+                        time.sleep(3)
                         pygui.write("20/06/2025")
                         wait.until(
                             EC.element_to_be_clickable(
@@ -185,7 +185,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             )
                         ).click()
                     # Finished to add the 15 items in order, now we need to go to the invoice
-                    time.sleep(2)
+                    time.sleep(3)
                     # Invoice
                     invoice = wait.until(
                         EC.element_to_be_clickable(
@@ -206,20 +206,20 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         "arguments[0].scrollIntoView();", invoice_time
                     )
                     pygui.shortcut("ctrl", "end")
-                    time.sleep(2)
+                    time.sleep(3)
                     invoice_time.click()
-                    time.sleep(2)
+                    time.sleep(3)
                     pygui.write("30 dias")
-                    time.sleep(2)
+                    time.sleep(3)
                     pygui.press("enter")
-                    time.sleep(2)
+                    time.sleep(3)
 
                     wait.until(
                         EC.element_to_be_clickable(
                             (By.XPATH, "//*[@id='gerarParcelas']")
                         )
                     ).click()
-                    time.sleep(2)
+                    time.sleep(3)
                     pygui.shortcut("ctrl", "end")
                     # Choosing the purpose of the items in the order
                     purpose = wait.until(
@@ -227,13 +227,13 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             (By.XPATH, "//*[@id='s2id_sel2Rateio']")
                         )
                     )
-                    time.sleep(2)
+                    time.sleep(3)
                     purpose.click()
-                    time.sleep(2)
+                    time.sleep(3)
                     pygui.write(rateio)
-                    time.sleep(2)
+                    time.sleep(3)
                     pygui.press("enter")
-                    time.sleep(2)
+                    time.sleep(3)
 
                     console.print("[bold blue]Gravando pedido de compra[/bold blue]")
                     wait.until(
@@ -253,10 +253,10 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             )
                         )
                     ).text
-                    time.sleep(2)
+                    time.sleep(3)
                     order["pedido_numero"] = order_number
 
-                    time.sleep(2)
+                    time.sleep(3)
                     console.print(
                         f"[bold green]Pedido de compra criado com sucesso:[/bold green] {order['pedido_numero']}"
                     )
@@ -274,7 +274,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     input("Press Enter to continue...")
                     return
             driver.quit()
-            time.sleep(5)
+            time.sleep(6)
             console.print("[bold blue]Iniciando criação das notas fiscais[/bold blue]")
             create_invoice(username, password, orders, rateio)
 
