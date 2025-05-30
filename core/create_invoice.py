@@ -46,6 +46,8 @@ def create_invoice(
         "vera.cristina@lanxcables.com.br",
         "adriana.damas@lanxcables.com.br",
         "lucineide@lanxcables.com.br",
+        "valdirene.souza@lanxcables.com.br",
+        "renata.perez@lanxcables.com.br"
     ]
 
     # Create
