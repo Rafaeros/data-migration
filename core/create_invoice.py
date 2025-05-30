@@ -69,7 +69,7 @@ def create_invoice(
                 EC.visibility_of_element_located(
                     (By.XPATH, "//*[@id='select2-drop']/div/input")
                 )
-            ).send_keys("5.102")
+            ).send_keys("5.949-")
             pygui.press("enter")
             time.sleep(2)
             console.print(
@@ -185,7 +185,7 @@ def create_invoice(
                 pygui.press("enter")
                 time.sleep(3)
 
-                icms_input = wait.until(
+                """ icms_input = wait.until(
                     EC.visibility_of_element_located(
                         (By.XPATH, "//*[@id='icmsAliquota']")
                     )
@@ -196,7 +196,7 @@ def create_invoice(
                     icms_input.clear()
                     time.sleep(2)
                     icms_input.send_keys(icms_value)
-                    time.sleep(2)
+                    time.sleep(2) """
 
                 add_item = wait.until(
                     EC.element_to_be_clickable((By.XPATH, "//*[@id='btnGravarItem']"))
