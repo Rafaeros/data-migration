@@ -205,6 +205,19 @@ def create_invoice(
 
             time.sleep(3)
             pygui.shortcut("ctrl", "end")
+            
+            frete = wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//*[@id='s2id_sel2ModalidadeFrete']")
+                )
+            )
+            d.execute_script("arguments[0].scrollIntoView();", frete)
+            time.sleep(2)
+            frete.click()
+            pygui.write("Sem frete", interval=0.2)
+            time.sleep(2)
+            pygui.press("enter")
+            time.sleep(3)
 
             wait.until(
                 EC.visibility_of_element_located(
