@@ -71,7 +71,7 @@ def create_invoice(
                 )
             ).send_keys("5.949-")
             pygui.press("enter")
-            time.sleep(2)
+            time.sleep(3)
             console.print(
                 "[bold green]Natureza da Operação incluido com Sucesso[/bold green]"
             )
@@ -87,7 +87,7 @@ def create_invoice(
                 )
             ).send_keys("60.347.923/0001-46")
             pygui.press("enter")
-            time.sleep(2)
+            time.sleep(3)
             console.print("[bold green]Destinatário incluido com Sucesso[/bold green]")
 
             comp = wait.until(
@@ -122,8 +122,9 @@ def create_invoice(
                 ).click()
                 time.sleep(3)
                 pygui.press("tab", presses=2, interval=0.2)
-                pygui.write(item["CODÍGO"])
-                time.sleep(2)
+                code = str(item["CODÍGO"])
+                pygui.write(code)
+                time.sleep(3)
                 pygui.press("enter")
                 time.sleep(3)
 
@@ -139,12 +140,20 @@ def create_invoice(
                 console.print(
                     f"[bold green]Item: {item['CODÍGO']} incluido com Sucesso[/bold green]"
                 )
+                qty = str(item["SALDO TOTAL"])
+                if qty.endswith(".0"):
+                    qty = str(int(float(qty)))
+                    pygui.write(qty)
+                    item["SALDO TOTAL"] = qty
+                else:
+                    pygui.write(str(qty).replace(".", ","))
+                    item["SALDO TOTAL"] = qty
 
                 wait.until(
                     EC.visibility_of_element_located(
                         (By.XPATH, "//*[@id='quantidadeCom']")
                     )
-                ).send_keys(item["SALDO TOTAL"])
+                ).send_keys(qty)
 
                 cost: str = ""
                 if item["CUSTO UNITARIO"] == 0:
@@ -152,7 +161,7 @@ def create_invoice(
                 elif item["CUSTO UNITARIO"] < 0:
                     cost = str(abs(item["CUSTO UNITARIO"])).replace(".", ",")
                 else:
-                    cost = str(item["CUSTO UNITARIO"]).replace(".", ",")
+                    cost = f"{float(item['CUSTO UNITARIO']):.3f}".replace(".", ",")
 
                 wait.until(
                     EC.visibility_of_element_located(
@@ -194,9 +203,9 @@ def create_invoice(
                 if icms_value is not None:
                     icms_value = icms_value.replace(".", ",")
                     icms_input.clear()
-                    time.sleep(2)
+                    time.sleep(3)
                     icms_input.send_keys(icms_value)
-                    time.sleep(2) """
+                    time.sleep(3) """
 
                 add_item = wait.until(
                     EC.element_to_be_clickable((By.XPATH, "//*[@id='btnGravarItem']"))
@@ -214,10 +223,10 @@ def create_invoice(
                 )
             )
             d.execute_script("arguments[0].scrollIntoView();", frete)
-            time.sleep(2)
+            time.sleep(3)
             frete.click()
             pygui.write("Sem frete", interval=0.2)
-            time.sleep(2)
+            time.sleep(3)
             pygui.press("enter")
             time.sleep(3)
 
@@ -227,9 +236,9 @@ def create_invoice(
                 )
             ).click()
 
-            time.sleep(2)
+            time.sleep(3)
             pygui.write("30 dias")
-            time.sleep(2)
+            time.sleep(3)
             pygui.press("enter")
 
             time.sleep(3)
@@ -242,7 +251,7 @@ def create_invoice(
             pygui.write("Bolet")
             time.sleep(3)
             pygui.press("enter")
-            time.sleep(2)
+            time.sleep(3)
 
             wait.until(
                 EC.visibility_of_element_located((By.XPATH, "//*[@id='gerarParcelas']"))
@@ -259,7 +268,7 @@ def create_invoice(
             ).send_keys(order_info)
             time.sleep(3)
             pygui.shortcut("ctrl", "end")
-            time.sleep(2)
+            time.sleep(3)
 
             # Style Grid and Button
             generate_invoice_grid = wait.until(
@@ -294,12 +303,12 @@ def create_invoice(
                 f"arguments[0].setAttribute('style', '{btn_style}');",
                 generate_invoice_btn,
             )
-            time.sleep(2)
+            time.sleep(3)
             generate_invoice_btn.click()
             console.print("[bold green]Nota Fiscal criada com sucesso![/bold green]")
             current_email = emails[i % len(emails)]
             send_order_email(order, rateio, current_email)
-            time.sleep(2)
+            time.sleep(3)
     except selenium.common.exceptions.NoSuchElementException as e:
         print(f"Error: {e}")
     except selenium.common.exceptions.ElementNotInteractableException as e:
