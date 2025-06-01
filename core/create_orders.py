@@ -156,7 +156,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         pygui.press("tab", presses=2)
                         time.sleep(4)
                         code = str(item["CODÍGO"])
-                        pygui.write(code)
+                        pygui.write(code, interval=0.2)
                         time.sleep(4)
                         pygui.press("enter")
                         time.sleep(4)
