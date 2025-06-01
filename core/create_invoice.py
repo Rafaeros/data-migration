@@ -45,9 +45,8 @@ def create_invoice(
     emails: list[str] = [
         "vera.cristina@lanxcables.com.br",
         "adriana.damas@lanxcables.com.br",
-        "lucineide@lanxcables.com.br",
-        "valdirene.souza@lanxcables.com.br",
         "renata.perez@lanxcables.com.br",
+        "lucineide@lanxcables.com.br",
     ]
 
     # Create
@@ -161,14 +160,14 @@ def create_invoice(
                         pygui.shortcut("alt", "tab")
                         time.sleep(3)
 
-                qty = str(item["SALDO TOTAL"])
-                if qty.endswith(".0"):
-                    qty = str(int(float(qty)))
-                    pygui.write(qty)
-                    item["SALDO TOTAL"] = qty
+                qty = item["SALDO TOTAL"]
+                if float(qty).is_integer():
+                    qty = str(int(qty))
                 else:
-                    pygui.write(str(qty).replace(".", ","))
-                    item["SALDO TOTAL"] = qty
+                    qty = str(qty).replace(".", ",")
+
+                pygui.write(qty)
+                item["SALDO TOTAL"] = qty
 
                 wait.until(
                     EC.visibility_of_element_located(
@@ -345,7 +344,7 @@ if __name__ == "__main__":
                     "CODÍGO": "CXPP01GKF",
                     "FINALIDADE": "Embalagens",
                     "PROPRIETARIO": "Estoque",
-                    "SALDO TOTAL": 165,
+                    "SALDO TOTAL": 1621.9,
                     "UNIDADE": "un",
                     "CUSTO UNITARIO": 0.80625,
                     "DECLARA": "DECLARA",
@@ -355,7 +354,7 @@ if __name__ == "__main__":
                     "CODÍGO": "CXPP01M",
                     "FINALIDADE": "Embalagens",
                     "PROPRIETARIO": "Estoque",
-                    "SALDO TOTAL": 100,
+                    "SALDO TOTAL": 100.0,
                     "UNIDADE": "un",
                     "CUSTO UNITARIO": 0.80625,
                     "DECLARA": "DECLARA",
