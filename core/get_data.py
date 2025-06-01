@@ -18,6 +18,7 @@ def format_sheet_data(df: pd.DataFrame) -> list[str]:
     df = df[
         [
             "CODÍGO",
+            "DESCRIÇÃO",
             "FINALIDADE",
             "PROPRIETARIO",
             "SALDO TOTAL",
