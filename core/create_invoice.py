@@ -47,7 +47,7 @@ def create_invoice(
         "adriana.damas@lanxcables.com.br",
         "lucineide@lanxcables.com.br",
         "valdirene.souza@lanxcables.com.br",
-        "renata.perez@lanxcables.com.br"
+        "renata.perez@lanxcables.com.br",
     ]
 
     # Create
@@ -140,6 +140,27 @@ def create_invoice(
                 console.print(
                     f"[bold green]Item: {item['CODÍGO']} incluido com Sucesso[/bold green]"
                 )
+                time.sleep(4)
+
+                ncm = wait.until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "//*[@id='s2id_txtNCM']/a/span[1]")
+                    )
+                )
+                while ncm.text == "":
+                    if ncm.text == "":
+                        pygui.shortcut("alt", "tab")
+                        console.print(
+                            f"[bold red]NCM não encontrado verifique o código do material: {code}[/bold red]",
+                        )
+                        input(
+                            "Após adicionar o código manualmente, volte aqui e pressione enter para continuar..."
+                        )
+
+                        time.sleep(3)
+                        pygui.shortcut("alt", "tab")
+                        time.sleep(3)
+
                 qty = str(item["SALDO TOTAL"])
                 if qty.endswith(".0"):
                     qty = str(int(float(qty)))
@@ -194,19 +215,6 @@ def create_invoice(
                 pygui.press("enter")
                 time.sleep(3)
 
-                """ icms_input = wait.until(
-                    EC.visibility_of_element_located(
-                        (By.XPATH, "//*[@id='icmsAliquota']")
-                    )
-                )
-                icms_value = icms_input.get_attribute("value")
-                if icms_value is not None:
-                    icms_value = icms_value.replace(".", ",")
-                    icms_input.clear()
-                    time.sleep(3)
-                    icms_input.send_keys(icms_value)
-                    time.sleep(3) """
-
                 add_item = wait.until(
                     EC.element_to_be_clickable((By.XPATH, "//*[@id='btnGravarItem']"))
                 )
@@ -216,7 +224,7 @@ def create_invoice(
 
             time.sleep(3)
             pygui.shortcut("ctrl", "end")
-            
+
             frete = wait.until(
                 EC.presence_of_element_located(
                     (By.XPATH, "//*[@id='s2id_sel2ModalidadeFrete']")
