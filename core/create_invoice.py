@@ -55,9 +55,9 @@ def create_invoice(
         d.get("https://app.cargamaquina.com.br/fiscal/nfe/saida")
         time.sleep(6)
         for i, order in enumerate(orders):
-            time.sleep(3)
+            time.sleep(4)
             wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Incluir"))).click()
-            time.sleep(3)
+            time.sleep(4)
             wait.until(
                 EC.visibility_of_element_located(
                     (By.XPATH, "//*[@id='s2id_sel2Natureza']")
@@ -70,7 +70,7 @@ def create_invoice(
                 )
             ).send_keys("5.949-")
             pygui.press("enter")
-            time.sleep(3)
+            time.sleep(4)
             console.print(
                 "[bold green]Natureza da Operação incluido com Sucesso[/bold green]"
             )
@@ -86,7 +86,7 @@ def create_invoice(
                 )
             ).send_keys("60.347.923/0001-46")
             pygui.press("enter")
-            time.sleep(3)
+            time.sleep(4)
             console.print("[bold green]Destinatário incluido com Sucesso[/bold green]")
 
             comp = wait.until(
@@ -95,10 +95,10 @@ def create_invoice(
                 )
             )
             d.execute_script("arguments[0].scrollIntoView();", comp)
-            time.sleep(3)
+            time.sleep(4)
 
             for item in order["itens"]:
-                time.sleep(3)
+                time.sleep(4)
                 console.print(
                     "[bold blue]Abrindo Formulário para Adicionar Itens na NF[/bold blue]"
                 )
@@ -112,20 +112,20 @@ def create_invoice(
                 )
 
                 add_form.click()
-                time.sleep(3)
+                time.sleep(4)
 
                 wait.until(
                     EC.element_to_be_clickable(
                         (By.XPATH, "//*[@id='tabDados']/div/div[1]/div[2]/div[3]/a")
                     )
                 ).click()
-                time.sleep(3)
+                time.sleep(4)
                 pygui.press("tab", presses=2, interval=0.2)
                 code = str(item["CODÍGO"])
                 pygui.write(code)
-                time.sleep(3)
+                time.sleep(4)
                 pygui.press("enter")
-                time.sleep(3)
+                time.sleep(4)
 
                 wait.until(
                     EC.visibility_of_element_located(
@@ -135,7 +135,7 @@ def create_invoice(
                         )
                     )
                 ).click()
-                time.sleep(3)
+                time.sleep(4)
                 console.print(
                     f"[bold green]Item: {item['CODÍGO']} incluido com Sucesso[/bold green]"
                 )
@@ -156,9 +156,9 @@ def create_invoice(
                             "Após adicionar o código manualmente, volte aqui e pressione enter para continuar..."
                         )
 
-                        time.sleep(3)
+                        time.sleep(4)
                         pygui.shortcut("alt", "tab")
-                        time.sleep(3)
+                        time.sleep(4)
 
                 qty = item["SALDO TOTAL"]
                 if float(qty).is_integer():
@@ -192,7 +192,7 @@ def create_invoice(
                     "[bold green]Quantidade e Custo UN incluido com Sucesso[/bold green]"
                 )
 
-                time.sleep(3)
+                time.sleep(4)
                 wait.until(
                     EC.element_to_be_clickable(
                         (
@@ -201,7 +201,7 @@ def create_invoice(
                         )
                     )
                 ).click()
-                time.sleep(3)
+                time.sleep(4)
                 wait.until(
                     EC.element_to_be_clickable(
                         (By.XPATH, "//*[@id='accordionTributosICMS']")
@@ -210,18 +210,18 @@ def create_invoice(
 
                 pygui.press("tab", presses=2, interval=0.2)
                 pygui.write("0 - Nacional")
-                time.sleep(3)
+                time.sleep(4)
                 pygui.press("enter")
-                time.sleep(3)
+                time.sleep(4)
 
                 add_item = wait.until(
                     EC.element_to_be_clickable((By.XPATH, "//*[@id='btnGravarItem']"))
                 )
                 add_item.click()
                 console.print("[bold green]ICMS Incluido com Sucesso[/bold green]")
-                time.sleep(3)
+                time.sleep(4)
 
-            time.sleep(3)
+            time.sleep(4)
             pygui.shortcut("ctrl", "end")
 
             frete = wait.until(
@@ -230,12 +230,12 @@ def create_invoice(
                 )
             )
             d.execute_script("arguments[0].scrollIntoView();", frete)
-            time.sleep(3)
+            time.sleep(4)
             frete.click()
             pygui.write("Sem frete", interval=0.2)
-            time.sleep(3)
+            time.sleep(4)
             pygui.press("enter")
-            time.sleep(3)
+            time.sleep(4)
 
             wait.until(
                 EC.visibility_of_element_located(
@@ -243,22 +243,22 @@ def create_invoice(
                 )
             ).click()
 
-            time.sleep(3)
+            time.sleep(4)
             pygui.write("30 dias")
-            time.sleep(3)
+            time.sleep(4)
             pygui.press("enter")
 
-            time.sleep(3)
+            time.sleep(4)
 
             select_element = wait.until(
                 EC.visibility_of_element_located((By.XPATH, "//*[@id='formaPag']"))
             )
             select_element.click()
-            time.sleep(3)
+            time.sleep(4)
             pygui.write("Bolet")
-            time.sleep(3)
+            time.sleep(4)
             pygui.press("enter")
-            time.sleep(3)
+            time.sleep(4)
 
             wait.until(
                 EC.visibility_of_element_located((By.XPATH, "//*[@id='gerarParcelas']"))
@@ -266,16 +266,16 @@ def create_invoice(
             console.print(
                 "[bold green]Condição de Pagamento incluida com sucesso[/bold green]"
             )
-            time.sleep(3)
+            time.sleep(4)
             order_info = f"Pedido de Compra: {order['pedido_numero']}"
             wait.until(
                 EC.visibility_of_element_located(
                     (By.XPATH, "//*[@id='infoAdicionais']")
                 )
             ).send_keys(order_info)
-            time.sleep(3)
+            time.sleep(4)
             pygui.shortcut("ctrl", "end")
-            time.sleep(3)
+            time.sleep(4)
 
             # Style Grid and Button
             generate_invoice_grid = wait.until(
@@ -286,7 +286,7 @@ def create_invoice(
             d.execute_script(
                 "arguments[0].style.padding = '50px';", generate_invoice_grid
             )
-            time.sleep(3)
+            time.sleep(4)
             btn_style = (
                 "height: 80px;"
                 "text-align: center;"
@@ -295,12 +295,12 @@ def create_invoice(
                 "align-items: center;"
                 "gap: 2px;"
             )
-            time.sleep(3)
+            time.sleep(4)
             wait.until(
                 EC.element_to_be_clickable((By.XPATH, "//*[@id='btnGerarMais']"))
             ).click()
             pygui.shortcut("ctrl", "end")
-            time.sleep(3)
+            time.sleep(4)
             generate_invoice_btn = wait.until(
                 EC.visibility_of_element_located(
                     (By.XPATH, "//*[@id='divBtnGerar']/ul/li/a")
@@ -310,12 +310,12 @@ def create_invoice(
                 f"arguments[0].setAttribute('style', '{btn_style}');",
                 generate_invoice_btn,
             )
-            time.sleep(3)
+            time.sleep(4)
             generate_invoice_btn.click()
             console.print("[bold green]Nota Fiscal criada com sucesso![/bold green]")
             current_email = emails[i % len(emails)]
             send_order_email(order, rateio, current_email)
-            time.sleep(3)
+            time.sleep(4)
     except selenium.common.exceptions.NoSuchElementException as e:
         print(f"Error: {e}")
     except selenium.common.exceptions.ElementNotInteractableException as e:
