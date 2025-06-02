@@ -3,6 +3,7 @@ This module is responsible for creating orders on the website.
 It uses Selenium to automate the login process and navigate through the website.
 """
 
+import re
 import os
 import json
 import time
@@ -16,7 +17,7 @@ import selenium.common.exceptions
 from rich.console import Console
 from rich.text import Text
 
-from core.utils.send_email import send_order_email
+from utils.send_email import send_order_email
 
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
@@ -51,7 +52,25 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
         driver.get("https://app.cargamaquina.com.br/fiscal/nfe/saida")
         driver.implicitly_wait(10)
         time.sleep(4)
+        selenium_cookies = driver.get_cookies()
+        request_cookies = {
+            cookie["name"]: cookie["value"] for cookie in selenium_cookies
+        }
+        scripts = driver.find_elements("tag name", "script")
+        csrf_token = None
+        for script in scripts:
+            content = script.get_attribute("innerHTML")
+            if content and "YII_CSRF_TOKEN" in content:
+                match = re.search(r"window\.YII_CSRF_TOKEN\s*=\s*'([^']+)'", content)
+                if match:
+                    csrf_token = match.group(1)
+                    break
+
+        print(f"Token CSRF encontrado: {csrf_token}")
+        time.sleep(3)
+        driver.close()
         driver.switch_to.window(driver.window_handles[0])
+        time.sleep(3)
     except selenium.common.exceptions.NoSuchElementException as e:
         print(f"Error: {e}")
     except selenium.common.exceptions.ElementNotInteractableException as e:
