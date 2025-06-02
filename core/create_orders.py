@@ -188,7 +188,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             qty = str(qty).replace(".", ",")
 
                         pygui.write(qty, interval=0.1)
-                        item["SALDO TOTAL"] = qty
+                        
                         pygui.press("tab")
                         time.sleep(4)
 
@@ -411,7 +411,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                             qty = str(qty).replace(".", ",")
 
                         pygui.write(qty)
-                        item["SALDO TOTAL"] = qty
+                        
 
                         wait.until(
                             EC.visibility_of_element_located(
