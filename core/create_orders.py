@@ -16,34 +16,47 @@ import selenium.common.exceptions
 from rich.console import Console
 from rich.text import Text
 
-from core.create_invoice import create_invoice
+from core.utils.send_email import send_order_email
 
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
     """Login to the website using Selenium."""
-    login_url: str = "https://v2.cargamaquina.com.br/site/login/c/3.1~13,3%5e17,7"
+    login_lx: str = "https://v2.cargamaquina.com.br/site/login/c/3.1~13,3%5e17,7"
+    login_fk: str = "https://app.cargamaquina.com.br/site/login?c=31.1~78%2C8%5E56%2C8"
     options = Options()
-    options.add_argument("--force-device-scale-factor=0.75")  # 80% de zoom
+    options.add_argument("--start-maximized")
+    options.add_argument("--force-device-scale-factor=0.65")  # 80% de zoom
     driver = webdriver.Chrome(options=options)
-    driver.maximize_window()
     wait = WebDriverWait(driver, 15)
+    console = Console()
     try:
-        driver.get(login_url)
+        driver.get(login_lx)
         driver.implicitly_wait(10)
         driver.find_element(By.ID, "LoginForm_username").send_keys(username)
         driver.find_element(By.ID, "LoginForm_password").send_keys(password)
         driver.find_element(By.NAME, "yt0").click()
         driver.implicitly_wait(10)
+        console.print("[bold green]Login realizado com sucesso na LANX![/bold green]")
+        driver.get("https://v2.cargamaquina.com.br/compra/pedidoCompra")
+        driver.implicitly_wait(10)
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[1])
+        driver.get(login_fk)
+        driver.implicitly_wait(10)
+        driver.find_element(By.ID, "LoginForm_username").send_keys(username)
+        driver.find_element(By.ID, "LoginForm_password").send_keys(password)
+        driver.find_element(By.NAME, "yt0").click()
+        driver.implicitly_wait(10)
+        console.print("[bold green]Login realizado com sucesso na F&K![/bold green]")
+        driver.get("https://app.cargamaquina.com.br/fiscal/nfe/saida")
+        driver.implicitly_wait(10)
+        time.sleep(4)
+        driver.switch_to.window(driver.window_handles[0])
     except selenium.common.exceptions.NoSuchElementException as e:
         print(f"Error: {e}")
     except selenium.common.exceptions.ElementNotInteractableException as e:
         print(f"Error: {e}")
 
-    console = Console()
-    console.print("[bold green]Login realizado com sucesso![/bold green]")
-    console.print("[bold blue]Iniciando criação dos pedidos de compra...[/bold blue]")
-    time.sleep(4)
-    driver.get("https://v2.cargamaquina.com.br/compra/pedidoCompra")
     pygui.shortcut("alt", "tab")
     order_option: str = ""
     rateios: list[str] = [
@@ -91,7 +104,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
             text.stylize("bold green")
             console.print(text)
         console.print(
-            "[bold blue]Digite o número do pedido que deseja criar:[/bold blue]"
+            "[bold blue]Digite o número do tipo/proprietário que deseja criar:[/bold blue]"
         )
         order_option: str = input()
         time.sleep(2)
@@ -109,7 +122,14 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
         pygui.shortcut("alt", "tab")
         with open(json_file_path, "r", encoding="utf-8") as f:  # type: ignore
             orders = json.load(f)
-            for order in orders:
+            emails: list[str] = [
+                "vera.cristina@lanxcables.com.br",
+                "adriana.damas@lanxcables.com.br",
+                "renata.perez@lanxcables.com.br",
+                "lucineide@lanxcables.com.br",
+            ]
+            # Create orders
+            for i, order in enumerate(orders[:]):
                 try:
                     console.print(
                         f"[bold blue]Criando pedido de compra:[/bold blue] {order['pedido_numero']}"
@@ -131,8 +151,9 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     )
                     supplier.click()
                     time.sleep(4)
-                    pygui.write("f&k group tecnologia em sistemas automotivos ltda",
-                                interval=0.1)
+                    pygui.write(
+                        "f&k group tecnologia em sistemas automotivos ltda",
+                    )
                     pygui.press("enter")
                     time.sleep(4)
                     # Adding items in order
@@ -156,8 +177,8 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         pygui.press("tab", presses=2)
                         time.sleep(4)
                         code = str(item["CODÍGO"])
-                        pygui.write(code, interval=0.2)
-                        time.sleep(4)
+                        pygui.write(code)
+                        time.sleep(5)
                         pygui.press("enter")
                         time.sleep(4)
                         qty = item["SALDO TOTAL"]
@@ -185,7 +206,7 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                         time.sleep(4)
                         pygui.press("tab", presses=3)
                         time.sleep(4)
-                        pygui.write("20/06/2025")
+                        pygui.write("30/06/2025")
                         wait.until(
                             EC.element_to_be_clickable(
                                 (By.XPATH, "//*[@id='adicionarItemCompraGrid']")
@@ -268,14 +289,308 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
                     console.print(
                         f"[bold green]Pedido de compra criado com sucesso:[/bold green] {order['pedido_numero']}"
                     )
+
+                    # Create Invoice
+                    driver.switch_to.window(driver.window_handles[1])
+                    time.sleep(4)
+                    wait.until(
+                        EC.element_to_be_clickable((By.LINK_TEXT, "Incluir"))
+                    ).click()
+                    time.sleep(4)
+                    wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='s2id_sel2Natureza']")
+                        )
+                    ).click()
+
+                    wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='select2-drop']/div/input")
+                        )
+                    ).send_keys("5.949-")
+                    pygui.press("enter")
+                    time.sleep(4)
+                    console.print(
+                        "[bold green]Natureza da Operação incluido com Sucesso[/bold green]"
+                    )
+
+                    wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='s2id_sel2PessoaDestinatario']")
+                        )
+                    ).click()
+                    wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='select2-drop']/div/input")
+                        )
+                    ).send_keys("60.347.923/0001-46")
+                    pygui.press("enter")
+                    time.sleep(4)
+                    console.print(
+                        "[bold green]Destinatário incluido com Sucesso[/bold green]"
+                    )
+
+                    comp = wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='txtComplemento']")
+                        )
+                    )
+                    driver.execute_script("arguments[0].scrollIntoView();", comp)
+                    time.sleep(4)
+
+                    for item in order["itens"]:
+                        time.sleep(4)
+                        console.print(
+                            "[bold blue]Abrindo Formulário para Adicionar Itens na NF[/bold blue]"
+                        )
+                        add_form = wait.until(
+                            EC.element_to_be_clickable(
+                                (
+                                    By.XPATH,
+                                    "//*[@id='collapseItens']/div/div/div/div[2]/div[1]/div[1]/div[1]/a",
+                                )
+                            )
+                        )
+
+                        add_form.click()
+                        time.sleep(4)
+
+                        wait.until(
+                            EC.element_to_be_clickable(
+                                (
+                                    By.XPATH,
+                                    "//*[@id='tabDados']/div/div[1]/div[2]/div[3]/a",
+                                )
+                            )
+                        ).click()
+                        time.sleep(4)
+                        pygui.press("tab", presses=2, interval=0.2)
+                        code = str(item["CODÍGO"])
+                        pygui.write(code)
+                        time.sleep(4)
+                        pygui.press("enter")
+                        time.sleep(4)
+
+                        wait.until(
+                            EC.visibility_of_element_located(
+                                (
+                                    By.XPATH,
+                                    "//*[@id='dialogSelecionarProduto']/div/div/div[3]/a[1]",
+                                )
+                            )
+                        ).click()
+                        time.sleep(4)
+                        console.print(
+                            f"[bold green]Item: {item['CODÍGO']} incluido com Sucesso[/bold green]"
+                        )
+                        time.sleep(4)
+
+                        ncm = wait.until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "//*[@id='s2id_txtNCM']/a/span[1]")
+                            )
+                        )
+                        while ncm.text == "":
+                            if ncm.text == "":
+                                pygui.shortcut("alt", "tab")
+                                console.print(
+                                    f"[bold red]NCM não encontrado verifique o código do material: {code}[/bold red]",
+                                )
+                                input(
+                                    "Após adicionar o código manualmente, volte aqui e pressione enter para continuar..."
+                                )
+
+                                time.sleep(4)
+                                pygui.shortcut("alt", "tab")
+                                time.sleep(4)
+
+                        qty = item["SALDO TOTAL"]
+                        if float(qty).is_integer():
+                            qty = str(int(qty))
+                        else:
+                            qty = str(qty).replace(".", ",")
+
+                        pygui.write(qty)
+                        item["SALDO TOTAL"] = qty
+
+                        wait.until(
+                            EC.visibility_of_element_located(
+                                (By.XPATH, "//*[@id='quantidadeCom']")
+                            )
+                        ).send_keys(qty)
+
+                        cost: str = ""
+                        if item["CUSTO UNITARIO"] == 0:
+                            cost = "1,00"
+                        elif item["CUSTO UNITARIO"] < 0:
+                            cost = str(abs(item["CUSTO UNITARIO"])).replace(".", ",")
+                        else:
+                            cost = f"{float(item['CUSTO UNITARIO']):.3f}".replace(
+                                ".", ","
+                            )
+
+                        wait.until(
+                            EC.visibility_of_element_located(
+                                (By.XPATH, "//*[@id='valorUnitario']")
+                            )
+                        ).send_keys(cost)
+                        console.print(
+                            "[bold green]Quantidade e Custo UN incluido com Sucesso[/bold green]"
+                        )
+
+                        time.sleep(4)
+                        wait.until(
+                            EC.element_to_be_clickable(
+                                (
+                                    By.XPATH,
+                                    "//*[@id='modal-item-form']/div/div[2]/div/div/ul/li[2]/a",
+                                )
+                            )
+                        ).click()
+                        time.sleep(4)
+                        wait.until(
+                            EC.element_to_be_clickable(
+                                (By.XPATH, "//*[@id='accordionTributosICMS']")
+                            )
+                        ).click()
+
+                        pygui.press("tab", presses=2, interval=0.2)
+                        pygui.write("0 - Nacional")
+                        time.sleep(4)
+                        pygui.press("enter")
+                        time.sleep(4)
+
+                        add_item = wait.until(
+                            EC.element_to_be_clickable(
+                                (By.XPATH, "//*[@id='btnGravarItem']")
+                            )
+                        )
+                        add_item.click()
+                        console.print(
+                            "[bold green]ICMS Incluido com Sucesso[/bold green]"
+                        )
+                        time.sleep(4)
+
+                    time.sleep(4)
+                    pygui.shortcut("ctrl", "end")
+
+                    frete = wait.until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "//*[@id='s2id_sel2ModalidadeFrete']")
+                        )
+                    )
+                    driver.execute_script("arguments[0].scrollIntoView();", frete)
+                    time.sleep(4)
+                    frete.click()
+                    pygui.write("Sem frete", interval=0.1)
+                    time.sleep(4)
+                    pygui.press("enter")
+                    time.sleep(4)
+
+                    wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='s2id_sel2PrazoPR']")
+                        )
+                    ).click()
+
+                    time.sleep(4)
+                    pygui.write("30 dias")
+                    time.sleep(4)
+                    pygui.press("enter")
+
+                    time.sleep(4)
+
+                    select_element = wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='formaPag']")
+                        )
+                    )
+                    select_element.click()
+                    time.sleep(4)
+                    pygui.write("Bolet")
+                    time.sleep(4)
+                    pygui.press("enter")
+                    time.sleep(4)
+
+                    wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='gerarParcelas']")
+                        )
+                    ).click()
+                    console.print(
+                        "[bold green]Condição de Pagamento incluida com sucesso[/bold green]"
+                    )
+                    time.sleep(4)
+                    order_info = f"Pedido de Compra: {order['pedido_numero']}"
+                    wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='infoAdicionais']")
+                        )
+                    ).send_keys(order_info)
+                    time.sleep(4)
+                    pygui.shortcut("ctrl", "end")
+                    time.sleep(4)
+
+                    # Style Grid and Button
+                    generate_invoice_grid = wait.until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "//*[@id='mainGridControl']/div/div[1]/div")
+                        )
+                    )
+                    driver.execute_script(
+                        "arguments[0].style.padding = '50px';", generate_invoice_grid
+                    )
+                    time.sleep(4)
+                    btn_style = (
+                        "height: 80px;"
+                        "text-align: center;"
+                        "display: flex;"
+                        "justify-content: center;"
+                        "align-items: center;"
+                        "gap: 2px;"
+                    )
+                    time.sleep(4)
+                    wait.until(
+                        EC.element_to_be_clickable(
+                            (By.XPATH, "//*[@id='btnGerarMais']")
+                        )
+                    ).click()
+                    pygui.shortcut("ctrl", "end")
+                    time.sleep(4)
+                    generate_invoice_btn = wait.until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//*[@id='divBtnGerar']/ul/li/a")
+                        )
+                    )
+                    driver.execute_script(
+                        f"arguments[0].setAttribute('style', '{btn_style}');",
+                        generate_invoice_btn,
+                    )
+                    time.sleep(4)
+                    generate_invoice_btn.click()
+                    console.print(
+                        "[bold green]Nota Fiscal criada com sucesso![/bold green]"
+                    )
+                    current_email = emails[i % len(emails)]
+                    send_order_email(order, rateio, current_email)
+                    time.sleep(4)
+                    driver.switch_to.window(driver.window_handles[0])
+                    time.sleep(4)
+
+                    orders.remove(order)
+                    with open(json_file_path, "w", encoding="utf-8") as f:
+                        json.dump(orders, f, indent=4, ensure_ascii=False)
                 except selenium.common.exceptions.NoSuchElementException as e:
                     print(f"Error: {e}")
+                    input("Press Enter to continue...")
                     return
                 except selenium.common.exceptions.ElementNotInteractableException as e:
                     print(f"Error: {e}")
+                    input("Press Enter to continue...")
                     return
                 except selenium.common.exceptions.StaleElementReferenceException as e:
                     print(f"Error: {e}")
+                    input("Press Enter to continue...")
                     return
                 except Exception as e:
                     print(f"Error: {e}")
@@ -284,7 +599,6 @@ def create_orders(username: str, password: str, json_file_paths: list[str]) -> N
             driver.quit()
             time.sleep(6)
             console.print("[bold blue]Iniciando criação das notas fiscais[/bold blue]")
-            create_invoice(username, password, orders, rateio)
 
         sended_orders_path: str = "./tmp/pedidos_enviados.txt"
         if not os.path.exists(sended_orders_path):
