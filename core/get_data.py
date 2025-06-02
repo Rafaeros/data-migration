@@ -18,6 +18,7 @@ def format_sheet_data(df: pd.DataFrame) -> list[str]:
     df = df[
         [
             "CODÍGO",
+            "DESCRIÇÃO",
             "FINALIDADE",
             "PROPRIETARIO",
             "SALDO TOTAL",
@@ -36,6 +37,7 @@ def format_sheet_data(df: pd.DataFrame) -> list[str]:
     ]
     df["SALDO TOTAL"] = pd.to_numeric(df["SALDO TOTAL"], errors="coerce")
     df = df[df["SALDO TOTAL"] > 0]
+    df = df[df["NCM"] > 0]
     df = df[df["PROPRIETARIO"].isin(owners)]
 
     groups = df.groupby("TIPO/PROPRIETARIO")
