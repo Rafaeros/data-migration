@@ -1,13 +1,27 @@
+"""
+module to create an invoice request for a given order.
+This module defines a function to send a POST request to the Cargamaquina
+to create an invoice based on the provided order data and authentication cookies.
+"""
+
 import requests
 
 
-def create_invoice_request(order_data: dict, cookies: dict, crsf_token: str) -> int:
+def create_request_item():
+    """
+    Format the request data for creating an invoice.
+    This function is a placeholder and should be implemented to return the actual request data.
+    """
+    pass
+
+
+
+def create_invoice_request(order: dict, cookies: dict, crsf_token: str):
     """
     Create an invoice request for a given order.
 
     :param order_data: Dictionary containing order details.
     :param cookie: Cookie string for authentication.
-    :return: Response from the API as a dictionary.
     """
     url: str = "https://app.cargamaquina.com.br/speed/speedNfe/saida"
 
@@ -17,7 +31,7 @@ def create_invoice_request(order_data: dict, cookies: dict, crsf_token: str) -> 
         'Nfe[_artigoTributacao]': '',
         'Nfe[armazenar]': '1',
         'Nfe[_origemNota]': '',
-        'Nfe[identificador_unico]': '6076683c4b8b7d4265.28287785',
+        'Nfe[identificador_unico]': '9364683e370b6ff160.27403748',
         'Nfe[tipo_operacao]': '1',
         'Nfe[natureza_id]': '37310453',
         'Nfe[finalidade_emissao]': '1',
@@ -84,15 +98,15 @@ def create_invoice_request(order_data: dict, cookies: dict, crsf_token: str) -> 
         'processo': '',
         'infoItem': 'G',
         'ItensNota[0][numero_item]': '1',
-        'ItensNota[0][codigo_produto]': 'CBM6V24PR01',
-        'ItensNota[0][descricao]': 'CABO MANGA 6V 24 AWG UL2517 (AM/LR/MR/PR/VD/VM) 300V 105°C Ø EXT. 7,0mm ± 0.20mm CAPA PRETA',
-        'ItensNota[0][unidade_comercial]': 'mt',
+        'ItensNota[0][codigo_produto]': 'CNFMP1503PR',
+        'ItensNota[0][descricao]': 'CONECTOR FÊMEA 3 VIAS METRI-PACK 150 SERIES PA66 PRETO (COD. DELPHI: 1212-9615)',
+        'ItensNota[0][unidade_comercial]': 'un',
         'ItensNota[0][cfop]': '4660576',
-        'ItensNota[0][quantidade_comercial]': '50',
-        'ItensNota[0][valor_unitario_comercial]': '10',
-        'ItensNota[0][valor_bruto]': '500.00',
-        'ItensNota[0][codigo_ncm]': '85444900',
-        'ItensNota[0][tipi_id]': '6010805',
+        'ItensNota[0][quantidade_comercial]': '61',
+        'ItensNota[0][valor_unitario_comercial]': '4.2880',
+        'ItensNota[0][valor_bruto]': '261.57',
+        'ItensNota[0][codigo_ncm]': '85369090',
+        'ItensNota[0][tipi_id]': '6010637',
         'ItensNota[0][cest]': '',
         'ItensNota[0][unidade_tributavel]': '',
         'ItensNota[0][quantidade_tributavel]': '',
@@ -123,21 +137,21 @@ def create_invoice_request(order_data: dict, cookies: dict, crsf_token: str) -> 
         'ItensNota[0][icms_valor_operacao]': '',
         'ItensNota[0][icms_valor_diferido]': '',
         'ItensNota[0][pis_situacao_tributaria]': '01',
-        'ItensNota[0][pis_base_calculo]': '500',
+        'ItensNota[0][pis_base_calculo]': '261,57',
         'ItensNota[0][pis_aliquota_valor]': '',
         'ItensNota[0][pis_aliquota_porcentual]': '1,65',
-        'ItensNota[0][pis_valor]': '8,25',
+        'ItensNota[0][pis_valor]': '4,32',
         'ItensNota[0][pis_quantidade_vendida]': '',
         'ItensNota[0][cofins_situacao_tributaria]': '01',
-        'ItensNota[0][cofins_base_calculo]': '500',
+        'ItensNota[0][cofins_base_calculo]': '261,57',
         'ItensNota[0][cofins_aliquota_valor]': '',
         'ItensNota[0][cofins_aliquota_porcentual]': '7,6',
-        'ItensNota[0][cofins_valor]': '38,00',
+        'ItensNota[0][cofins_valor]': '19,88',
         'ItensNota[0][cofins_quantidade_vendida]': '',
         'ItensNota[0][issqn_base_calculo]': '',
         'ItensNota[0][issqn_aliquota]': '',
         'ItensNota[0][issqn_valor]': '',
-        'ItensNota[0][ii_base_calculo]': '500,00',
+        'ItensNota[0][ii_base_calculo]': '261,57',
         'ItensNota[0][ii_aliquota]': '',
         'ItensNota[0][ii_valor]': '',
         'ItensNota[0][ii_despesas_aduaneiras]': '',
@@ -214,7 +228,7 @@ def create_invoice_request(order_data: dict, cookies: dict, crsf_token: str) -> 
         'ItensNota[0][codigo_remessa_xml]': '',
         'ItensNota[0][nota_remessa_id]': '',
         'Nfe[transportadora_id]': '',
-        'Nfe[modalidade_frete]': '',
+        'Nfe[modalidade_frete]': '9',
         'Nfe[valorFrete]': '',
         'Nfe[transportadorTipPessoa]': '0',
         'Nfe[cnpj_transportador]': '',
@@ -239,19 +253,24 @@ def create_invoice_request(order_data: dict, cookies: dict, crsf_token: str) -> 
         'condicao': '30',
         'Nfe[forma_pagamento]': '15',
         'Nfe[bandeira_pagamento]': '01',
-        'Nfe[total_nota]': '22903,4',
+        'Nfe[total_nota]': '261,57',
         'Nfe[_totalIpi]': '0',
         'PagamentosNota[0][numero]': '1',
-        'PagamentosNota[0][vencimento]': '01/07/2025',
-        'PagamentosNota[0][valor]': '22903,4',
+        'PagamentosNota[0][vencimento]': '02/07/2025',
+        'PagamentosNota[0][valor]': '261,57',
         'PagamentosNota[0][forma]': '15',
         'PagamentosNota[0][_bandeira]': '01',
         'PagamentosNota[0][_aVista]': '1',
-        'Nfe[info_adicionais]': 'Pedido de Compra: 21',
+        'Nfe[info_adicionais]': 'PEDIDO TESTE',
     }
 
     try:
-        response = requests.post(url, cookies=cookies, data=data)
+        response = requests.post(url, cookies=cookies, data=data, timeout=15)
+        if not response.ok:
+            print(f"Failed to create invoice request: {response.status_code}")
     except requests.RequestException as e:
         print(f"An error occurred while creating the invoice request: {e}")
-        return 0
+
+
+if __name__ == "__main__":
+    pass
