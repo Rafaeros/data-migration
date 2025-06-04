@@ -17,7 +17,7 @@ import selenium.common.exceptions
 from rich.console import Console
 from rich.text import Text
 
-from utils.send_email import send_order_email
+from core.utils.send_email import send_order_email
 
 
 def create_orders(username: str, password: str, json_file_paths: list[str]) -> None:
