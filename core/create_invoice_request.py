@@ -4,9 +4,6 @@ This module defines a function to send a POST request to the Cargamaquina
 to create an invoice based on the provided order data and authentication cookies.
 """
 
-import re
-from typing import Optional
-
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -14,7 +11,7 @@ from selenium.webdriver.common.by import By
 import selenium.common.exceptions
 
 
-def get_cookies(username: str, password: str) -> Optional[tuple[dict[str, str], str]]:
+def get_cookies(username: str, password: str) -> dict:
     """
     Retrieve cookies and CSRF token from the Cargamaquina login page.
     :param username: Username for Cargamaquina login.
@@ -33,31 +30,22 @@ def get_cookies(username: str, password: str) -> Optional[tuple[dict[str, str], 
         driver.find_element(By.ID, "LoginForm_submit").click()
         selenium_cookies = driver.get_cookies()
         request_cookies: dict = {cookie["name"]: cookie["value"] for cookie in selenium_cookies}
-        scripts = driver.find_elements("tag name", "script")
-        csrf_token: str = ""
-        for script in scripts:
-            content = script.get_attribute("innerHTML")
-            if content and "YII_CSRF_TOKEN" in content:
-                match = re.search(r"window\.YII_CSRF_TOKEN\s*=\s*'([^']+)'", content)
-                if match:
-                    csrf_token = match.group(1)
-                    break
     except selenium.common.exceptions.NoSuchElementException as e:
         print(f"Element not found: {e}")
-        return {}, ""
+        return {}
     except selenium.common.exceptions.TimeoutException as e:
         print(f"Timeout while trying to find elements: {e}")
-        return {}, ""
+        return {}
     except selenium.common.exceptions.WebDriverException as e:
         print(f"WebDriver error: {e}")
-        return {}, ""
+        return {}
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return {}, ""
+        return {}
     finally:
         driver.quit()
     print("Cookies and CSRF token retrieved successfully.")
-    return request_cookies, csrf_token
+    return request_cookies
 
 
 def create_request_item(index: int, item: dict) -> tuple[dict[str, str], float]:
